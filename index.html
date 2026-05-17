@@ -256,11 +256,6 @@ body {
   font-size: 9px; font-weight: bold;
   padding: 1px 5px; border-radius: 2px;
 }
-.sel-card .pos-name {
-  color: var(--text2); font-size: 8px;
-  text-align: center; font-style: italic;
-  max-width: 52px; line-height: 1.2;
-}
 .reading-text {
   background: #0e0620;
   border: 1px solid var(--gold-d);
@@ -388,13 +383,6 @@ body {
 <script>
 // ── Constantes ────────────────────────────────────────────────────────────────
 const MAX_CARDS = 5;
-const POSICIONES_5 = [
-  ["El Pasado",        "Lo que llevó a esta situación"],
-  ["El Presente",      "Tu situación actual"],
-  ["El Futuro",        "Lo que se avecina"],
-  ["Fuerzas Ocultas",  "Influencias no visibles"],
-  ["El Desenlace",     "El resultado final"],
-];
 
 // ── Catálogo ──────────────────────────────────────────────────────────────────
 const SUITS = ["Oros","Copas","Espadas","Bastos"];
@@ -681,37 +669,45 @@ async function generateReadingAI(name, question, cards, apiKey) {
   let cardsText = '';
   cards.forEach(([num, suit], i) => {
     const key = `${num} de ${suit}`;
-    const [posName, posDesc] = POSICIONES_5[i];
     const sig = SIG[key] || '';
-    cardsText += `Posición ${i+1} – ${posName} (${posDesc}):\n  Carta: ${key}\n  Significado: ${sig}\n\n`;
+    const firstLine = sig.split('\n')[0].split('.')[0];
+    cardsText += `Carta ${i+1}: ${key}\nSignificado: ${firstLine}\n\n`;
   });
 
   const cardNames = cards.map(([num, suit]) => `${num} de ${suit}`);
+  const seen = new Set();
   let combosText = '';
   cardNames.forEach(key => {
     const sigText = SIG[key] || '';
     cardNames.forEach(other => {
-      if(other !== key && sigText.includes(other)){
-        combosText += `  • ${key} + ${other}: combinación especial mencionada en el libro\n`;
+      const pair = [key, other].sort().join('|');
+      if(other !== key && sigText.includes(other) && !seen.has(pair)){
+        seen.add(pair);
+        combosText += `  • ${key} + ${other}\n`;
       }
     });
   });
 
-  const prompt = `Eres un tarotista experto en la Baraja Española de 48 cartas con profundos conocimientos de Astrología Maya y espiritualidad ancestral. Perteneces al Centro Saturno.
+  const prompt = `Eres el oráculo del Centro Saturno, experto en la baraja española de 48 cartas según el libro clásico "Lectura de las 48 cartas y combinaciones".
 
-El consultante es ${name} y su pregunta es: "${question}"
+Consultante: ${name}
+Pregunta: "${question}"
 
-Las 5 cartas elegidas en orden son:
-${cardsText}${combosText ? `Combinaciones especiales detectadas entre las cartas:\n${combosText}\n` : ''}
-Genera una lectura profunda y narrativa en español que:
-1. Comience con un saludo personalizado para ${name}
-2. Interprete cada posición (El Pasado, El Presente, El Futuro, Fuerzas Ocultas, El Desenlace) tejiendo una historia coherente
-3. Conecte las cartas entre sí respetando el orden en que fueron seleccionadas
-4. Si hay combinaciones especiales, destácalas con énfasis
-5. Cierre con un mensaje espiritual concluyente sobre la pregunta de ${name}
-6. Use un tono místico, profundo y compasivo
+Las 5 cartas en el orden exacto en que salieron:
+${cardsText}${combosText ? `Combinaciones especiales del libro entre estas cartas:\n${combosText}\n` : ''}INSTRUCCIÓN CLAVE — ESTILO DE LECTURA DEL LIBRO:
+Detecta si ${name} es hombre o mujer por el nombre y adapta el género gramatical.
+Lee las 5 cartas como UNA SOLA NARRATIVA DIRECTA encadenando los significados en orden.
 
-La lectura debe ser fluida como una narración, no una lista de puntos. Máximo 500 palabras.`;
+Ejemplo exacto del estilo del libro:
+"Los éxitos de un hombre de malas costumbres está fracasando en prosperidad por sus malas costumbres, enfermedades..."
+
+Reglas estrictas:
+- NO uses secciones ni posiciones (prohibido: "El Pasado", "El Presente", etc.)
+- NO uses viñetas, listas ni asteriscos
+- Una sola historia fluida de 3 a 5 oraciones que una los 5 significados en orden
+- La última oración responde directamente a "${question}"
+- Si hay combinaciones especiales, incorpóralas dentro de la narrativa
+- Tono directo, claro y espiritual — sin relleno`;
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -737,82 +733,38 @@ La lectura debe ser fluida como una narración, no una lista de puntos. Máximo 
 }
 
 // ── Lectura estándar (fallback) ───────────────────────────────────────────────
-const DOM_MSG={
-  "Oros":"el universo centra esta lectura en lo material y económico",
-  "Copas":"las emociones y el amor son el eje central de esta consulta",
-  "Espadas":"los conflictos y decisiones difíciles marcan esta tirada",
-  "Bastos":"la energía, el movimiento y los cambios dominan esta lectura"
-};
-
-function rnd(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-function shortMeaning(key){
-  const text=SIG[key]||'';
-  return (text.split('.')[0]||'').trim();
-}
-
-function detectCombos(cards){
-  const cardNames = cards.map(([num, suit]) => `${num} de ${suit}`);
-  const found = [];
-  cardNames.forEach(key => {
-    const sigText = SIG[key] || '';
-    cardNames.forEach(other => {
-      if(other !== key && sigText.includes(other)){
-        found.push(`${key} + ${other}`);
-      }
-    });
-  });
-  return found;
+function keywords(key){
+  const text = SIG[key] || '';
+  const line = text.split('\n').find(l => l.trim() && !l.includes('Combinaci') && !l.includes('Al revés')) || '';
+  return line.split(',').slice(0,3).map(s=>s.trim()).join(', ').toLowerCase();
 }
 
 function generateReading(name, question, cards){
-  const suitCnt={};
-  cards.forEach(([,s])=>suitCnt[s]=(suitCnt[s]||0)+1);
-  const dominant=Object.entries(suitCnt).sort((a,b)=>b[1]-a[1])[0][0];
+  // Detectar género por nombre
+  const nl = name.trim().toLowerCase();
+  const femaleEnds = ['a','ia','ina','ela','ella','ita','ana','ena'];
+  const isFemale = femaleEnds.some(e => nl.endsWith(e));
+  const subject = isFemale ? 'una mujer' : 'un hombre';
 
-  const combos = detectCombos(cards);
+  const k  = cards.map(([n,s]) => `${n} de ${s}`);
+  const kw = k.map(key => keywords(key));
 
-  let out='';
-  out+=`✦ ── LECTURA PARA ${name.toUpperCase()} ── ✦\n\n`;
-  out+=`Consulta: "${question}"\n`;
-  out+='═'.repeat(44)+'\n\n';
-  out+=`Las fuerzas espirituales señalan que ${DOM_MSG[dominant]}.\n\n`;
+  let out = '';
+  out += `✦ LECTURA PARA ${name.toUpperCase()} ✦\n\n`;
+  out += `Consulta: "${question}"\n`;
+  out += '═'.repeat(44) + '\n\n';
 
-  out+='─'.repeat(44)+'\n';
-  out+='✦ LAS CINCO POSICIONES ✦\n\n';
-  cards.forEach(([num,suit],i)=>{
-    const key=`${num} de ${suit}`;
-    const [posName, posDesc]=POSICIONES_5[i];
-    out+=`◆ ${posName.toUpperCase()} — ${posDesc}\n`;
-    out+=`   Carta: ${key}\n`;
-    out+=`   ${shortMeaning(key)}\n\n`;
-  });
+  // Narrativa encadenada — mismo estilo del libro
+  out += (
+    `Las cartas revelan para ${name}, ${subject} en quien ${kw[0]}, ` +
+    `que se encuentra ante ${kw[1]}, ` +
+    `lo cual conduce hacia ${kw[2]}. ` +
+    `A esto se suma la energía del ${k[3].split(' de ')[1]}: ${kw[3]}, ` +
+    `y el resultado final apunta hacia ${kw[4]}.\n\n`
+  );
 
-  if(combos.length){
-    out+='─'.repeat(44)+'\n';
-    out+='✦ COMBINACIONES ESPECIALES ✦\n\n';
-    combos.forEach(c => { out+=`  ⚡ ${c}\n`; });
-    out+='\n';
-  }
-
-  out+='─'.repeat(44)+'\n';
-  out+='✦ INTERPRETACIÓN ✦\n\n';
-
-  const k0=`${cards[0][0]} de ${cards[0][1]}`;
-  const k1=`${cards[1][0]} de ${cards[1][1]}`;
-  const k2=`${cards[2][0]} de ${cards[2][1]}`;
-  const k3=`${cards[3][0]} de ${cards[3][1]}`;
-  const k4=`${cards[4][0]} de ${cards[4][1]}`;
-
-  out+=`${name}, el pasado que dio origen a esta situación está marcado por ${k0}: ${shortMeaning(k0).toLowerCase()}.\n\n`;
-  out+=`En el presente, ${k1} domina tu realidad: ${shortMeaning(k1).toLowerCase()}.\n\n`;
-  out+=`El futuro trae la energía de ${k2}: ${shortMeaning(k2).toLowerCase()}.\n\n`;
-  out+=`Las fuerzas ocultas que actúan en tu vida revelan ${k3}: ${shortMeaning(k3).toLowerCase()}.\n\n`;
-  out+=`El desenlace final señala ${k4}: ${shortMeaning(k4).toLowerCase()}.\n\n`;
-
-  out+='─'.repeat(44)+'\n\n';
-  out+=`Respecto a "${question}": confía en las señales que el universo te enviará. Las cartas han hablado con claridad.\n\n`;
-  out+='✦  Centro Saturno Astrología Maya  ✦';
+  out += `Sobre "${question}": el oráculo habla claro — actúa con determinación y los astros te acompañarán.\n\n`;
+  out += '✦  Centro Saturno Astrología Maya  ✦';
   return out;
 }
 
@@ -824,7 +776,6 @@ async function goReading(){
   const row=document.getElementById('reading-row');
   row.innerHTML='<span class="label">Tu tirada:</span>';
   selectedCards.forEach(([num,suit],i)=>{
-    const [posName]=POSICIONES_5[i];
     const col=document.createElement('div');
     col.className='sel-card';
     const img=document.createElement('img');
@@ -832,9 +783,7 @@ async function goReading(){
     img.alt=`${num} de ${suit}`;
     const snum=document.createElement('div');
     snum.className='snum'; snum.textContent=i+1;
-    const pname=document.createElement('div');
-    pname.className='pos-name'; pname.textContent=posName;
-    col.appendChild(img); col.appendChild(snum); col.appendChild(pname);
+    col.appendChild(img); col.appendChild(snum);
     row.appendChild(col);
   });
 
