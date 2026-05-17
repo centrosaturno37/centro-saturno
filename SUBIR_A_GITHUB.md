@@ -10,7 +10,7 @@
 ## Paso 2 – Subir desde tu PC (abre PowerShell o Terminal)
 ```
 cd "C:\Users\mc456\OneDrive\Desktop\mis proyectos\centro-saturno-web"
-git remote add origin https://github.com/TU_USUARIO/centro-saturno.git
+git remote add origin https://github.com/centrosaturno37/centro-saturno.git
 git branch -M main
 git push -u origin main
 ```
@@ -24,7 +24,7 @@ git push -u origin main
 5. Clic en Save
 
 ## Tu link público será:
-https://TU_USUARIO.github.io/centro-saturno/
+https://centrosaturno37.github.io/centro-saturno/
 
 Este link funciona en Android, iPhone, WhatsApp, Facebook y cualquier navegador.
 
