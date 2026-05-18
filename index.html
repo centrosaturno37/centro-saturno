@@ -3,296 +3,308 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="theme-color" content="#080310">
-<meta name="description" content="Centro Saturno – Consulta de las 48 Cartas Españolas. Astrología Maya.">
+<meta name="theme-color" content="#0a0214">
 <title>Centro Saturno – Astrología Maya</title>
 <style>
-/* ── reset ── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { height: 100%; }
-body {
-  min-height: 100%;
-  background: #080310;
-  color: #e8d090;
-  font-family: Georgia, serif;
-  overflow-x: hidden;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{height:100%;}
+body{
+  min-height:100%;
+  background: linear-gradient(160deg,#0a0214 0%,#1a0520 40%,#0a1a0a 100%);
+  color:#f0e0b0;
+  font-family:Georgia,serif;
+  overflow-x:hidden;
+}
+:root{
+  --gold:#d4a830;--gold-l:#f0c860;--gold-d:#6a4a08;
+  --purple:#3a0a5a;--purp-l:#6a1a9a;
+  --red:#c0203a;--red-l:#e04060;--red-d:#600010;
+  --pink:#c04090;--pink-l:#e060b0;
+  --green:#208040;--green-l:#40c070;--green-d:#0a3018;
+  --bg:#0a0214;--bg2:#140828;--bg3:#0a1a0a;
+  --text:#f0e0b0;--text2:#906858;
+  --card-w:70px;--card-h:98px;
 }
 
-/* ── variables ── */
-:root {
-  --gold:    #d4a830;
-  --gold-l:  #f0c860;
-  --gold-d:  #6a4a08;
-  --purple:  #3a0a5a;
-  --purp-l:  #5a1a9a;
-  --bg:      #080310;
-  --bg2:     #100820;
-  --text:    #e8d090;
-  --text2:   #806840;
-  --card-w:  72px;
-  --card-h:  100px;
-}
+/* ── scrollbar ── */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--red-d);border-radius:3px;}
 
 /* ── header ── */
-.header {
-  position: relative;
-  width: 100%;
-  padding: 12px 8px 8px;
-  background: #080310;
-  border-bottom: 1px solid var(--gold-d);
-  text-align: center;
-  overflow: hidden;
+.header{
+  position:relative;width:100%;
+  padding:10px 8px 8px;
+  background:linear-gradient(90deg,#1a0010,#0a0214,#001a08);
+  border-bottom:2px solid var(--red-d);
+  text-align:center;overflow:hidden;
 }
-.header canvas { position: absolute; top: 0; left: 0; pointer-events: none; }
-.header h1 {
-  font-size: clamp(1.4rem, 5vw, 2rem);
-  color: var(--gold-l);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  position: relative; z-index: 1;
+.header canvas{position:absolute;top:0;left:0;pointer-events:none;}
+.header h1{
+  font-size:clamp(1.4rem,5vw,2.1rem);
+  color:var(--gold-l);letter-spacing:3px;
+  text-transform:uppercase;position:relative;z-index:1;
+  text-shadow:0 0 18px rgba(212,168,48,.5);
 }
-.header .sub {
-  font-size: clamp(0.75rem, 3vw, 0.95rem);
-  color: var(--gold);
-  font-style: italic;
-  position: relative; z-index: 1;
-  margin-top: 4px;
+.header .sub{
+  font-size:clamp(.75rem,3vw,.95rem);
+  color:var(--pink-l);font-style:italic;
+  position:relative;z-index:1;margin-top:4px;
 }
 
 /* ── pages ── */
-.page { display: none; animation: fadeIn .4s ease; }
-.page.active { display: block; }
-@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; } }
+.page{display:none;animation:fadeIn .4s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
 
 /* ── welcome ── */
-#pg-welcome { padding: 20px 12px; }
-.welcome-stars {
-  text-align: center; color: var(--gold-d);
-  font-size: .85rem; margin: 6px 0 18px;
+#pg-welcome{padding:20px 12px;}
+.welcome-stars{
+  text-align:center;color:var(--red-d);
+  font-size:.85rem;margin:6px 0 18px;
 }
-.form-panel {
-  max-width: 420px; margin: 0 auto;
-  background: var(--bg2);
-  border: 1px solid var(--gold-d);
-  border-radius: 6px;
-  padding: 24px 20px;
+.form-panel{
+  max-width:420px;margin:0 auto;
+  background:linear-gradient(160deg,#1a0828,#0a1a10);
+  border:1px solid var(--red-d);border-radius:8px;
+  padding:26px 22px;
+  box-shadow:0 0 30px rgba(192,32,58,.15);
 }
-.form-panel h2 {
-  text-align: center; color: var(--gold);
-  font-size: 1.1rem; margin-bottom: 20px;
+.form-panel h2{
+  text-align:center;color:var(--gold-l);
+  font-size:1.15rem;margin-bottom:10px;
 }
-.form-group { margin-bottom: 16px; }
-.form-group label {
-  display: block; color: var(--text);
-  font-size: .95rem; margin-bottom: 6px;
+.think-msg{
+  text-align:center;color:var(--pink-l);
+  font-size:.9rem;font-style:italic;
+  margin-bottom:20px;line-height:1.5;
+  border:1px solid var(--red-d);
+  border-radius:4px;padding:10px;
+  background:rgba(192,32,58,.08);
 }
-.form-group input {
-  width: 100%; padding: 10px 12px;
-  background: #180a2a; color: var(--gold-l);
-  border: 1px solid var(--gold-d);
-  border-radius: 4px; font-size: 1rem;
-  font-family: Georgia, serif;
-  outline: none;
+.form-group{margin-bottom:16px;}
+.form-group label{
+  display:block;color:var(--text);
+  font-size:.95rem;margin-bottom:6px;
 }
-.form-group input:focus { border-color: var(--gold); }
-.btn-primary {
-  display: block; width: 100%; padding: 13px;
-  background: var(--purple); color: var(--gold-l);
-  border: none; border-radius: 4px;
-  font-family: Georgia, serif; font-size: 1rem;
-  font-weight: bold; letter-spacing: 1px;
-  cursor: pointer; margin-top: 18px;
-  transition: background .2s;
+.form-group input{
+  width:100%;padding:10px 12px;
+  background:#1a0830;color:var(--gold-l);
+  border:1px solid var(--red-d);
+  border-radius:4px;font-size:1rem;
+  font-family:Georgia,serif;outline:none;
 }
-.btn-primary:hover { background: var(--purp-l); }
-.form-hint {
-  text-align: center; color: var(--text2);
-  font-size: .82rem; font-style: italic;
-  margin-top: 14px;
+.form-group input:focus{border-color:var(--pink-l);}
+.btn-primary{
+  display:block;width:100%;padding:13px;
+  background:linear-gradient(90deg,var(--red),var(--purple));
+  color:var(--gold-l);border:none;border-radius:6px;
+  font-family:Georgia,serif;font-size:1rem;
+  font-weight:bold;letter-spacing:1px;cursor:pointer;
+  margin-top:18px;transition:opacity .2s;
+  box-shadow:0 3px 12px rgba(192,32,58,.4);
 }
-.api-section { margin-top: 14px; }
-.btn-toggle-api {
-  background: none; border: 1px solid var(--gold-d);
-  color: var(--text2); padding: 6px 0;
-  border-radius: 4px; cursor: pointer;
-  font-size: .8rem; font-family: Georgia, serif;
-  width: 100%; letter-spacing: 1px;
+.btn-primary:hover{opacity:.85;}
+.form-hint{
+  text-align:center;color:var(--text2);
+  font-size:.82rem;font-style:italic;margin-top:12px;
 }
-.btn-toggle-api:hover { color: var(--gold); border-color: var(--gold); }
-#api-panel { padding-top: 12px; }
-.api-key-row { display: flex; gap: 6px; }
-.api-key-row input { flex: 1; font-size: .9rem; padding: 8px 10px; }
-.btn-save-key {
-  padding: 8px 12px; background: var(--purple);
-  color: var(--gold-l); border: none; border-radius: 4px;
-  font-family: Georgia, serif; font-size: .85rem;
-  cursor: pointer; white-space: nowrap;
-}
-.btn-save-key:hover { background: var(--purp-l); }
-.ai-status { text-align: center; font-size: .82rem; margin-top: 10px; min-height: 1.2em; }
-.ai-status.active { color: #5ab85a; }
-.ai-status.inactive { color: var(--text2); }
 
 /* ── transition ── */
-#pg-transition {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  min-height: 70vh; padding: 20px;
+#pg-transition{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  min-height:70vh;padding:20px;
 }
-#trans-canvas { max-width: 300px; width: 80%; }
-.trans-inv {
-  margin-top: 18px; font-size: 1.2rem;
-  color: var(--gold-l); font-weight: bold;
-  font-style: italic; text-align: center;
-  min-height: 1.6em;
+#trans-canvas{max-width:300px;width:80%;}
+.trans-inv{
+  margin-top:18px;font-size:1.2rem;
+  color:var(--pink-l);font-weight:bold;
+  font-style:italic;text-align:center;min-height:1.6em;
 }
-.trans-sub {
-  color: var(--text2); font-size: .85rem;
-  text-align: center; margin-top: 8px;
-}
+.trans-sub{color:var(--text2);font-size:.85rem;text-align:center;margin-top:8px;}
 
 /* ── cards screen ── */
-#pg-cards { padding: 6px 8px; }
-.info-bar {
-  display: flex; justify-content: space-between;
-  align-items: center; padding: 4px 8px;
-  background: var(--bg2); border-radius: 4px;
-  margin-bottom: 6px; font-size: .82rem;
-  flex-wrap: wrap; gap: 4px;
+#pg-cards{padding:6px 8px;}
+.info-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:5px 10px;border-radius:6px;margin-bottom:6px;
+  font-size:.82rem;flex-wrap:wrap;gap:4px;
+  background:linear-gradient(90deg,#2a0818,#0a1a0a);
+  border:1px solid var(--red-d);
 }
-.info-bar .name { color: var(--gold); font-weight: bold; }
-.info-bar .question { color: var(--text2); font-style: italic; flex: 1; margin: 0 8px; }
-.info-bar .count { color: var(--gold); font-weight: bold; }
-.cards-hint {
-  text-align: center; color: var(--text2);
-  font-size: .78rem; font-style: italic;
-  margin-bottom: 6px;
+.info-bar .name{color:var(--gold-l);font-weight:bold;}
+.info-bar .count{color:var(--green-l);font-weight:bold;}
+.cards-hint{
+  text-align:center;color:var(--pink-l);
+  font-size:.82rem;font-style:italic;margin-bottom:6px;
 }
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(6, var(--card-w));
-  gap: 4px;
-  justify-content: center;
-  margin: 0 auto;
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(6,var(--card-w));
+  gap:4px;justify-content:center;margin:0 auto;
 }
-.card-slot {
-  width: var(--card-w); height: var(--card-h);
-  cursor: pointer; position: relative;
-  perspective: 600px;
-  transition: opacity .3s;
+.card-slot{
+  width:var(--card-w);height:var(--card-h);
+  cursor:pointer;position:relative;perspective:600px;
+  transition:opacity .3s;
 }
-.card-slot.done {
-  opacity: 0.4;
-  pointer-events: none;
-  cursor: default;
+.card-slot.done{opacity:.35;pointer-events:none;cursor:default;}
+.card-inner{
+  width:100%;height:100%;position:relative;
+  transform-style:preserve-3d;transition:transform .45s ease;
 }
-.card-inner {
-  width: 100%; height: 100%;
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform .45s ease;
+.card-slot.flipped .card-inner{transform:rotateY(180deg);}
+.card-face,.card-back{
+  position:absolute;width:100%;height:100%;
+  backface-visibility:hidden;border-radius:5px;
+  border:1.5px solid var(--red-d);
 }
-.card-slot.flipped .card-inner { transform: rotateY(180deg); }
-.card-face, .card-back {
-  position: absolute; width: 100%; height: 100%;
-  backface-visibility: hidden;
-  border-radius: 5px;
-  border: 1.5px solid var(--gold-d);
+.card-back{
+  background:linear-gradient(160deg,#1a0030,#0a1008);
+  display:flex;align-items:center;justify-content:center;
 }
-.card-back {
-  background: #0e0425;
-  display: flex; align-items: center; justify-content: center;
+.card-back svg{width:60%;height:60%;}
+.card-face{transform:rotateY(180deg);overflow:hidden;}
+.card-face img{width:100%;height:100%;object-fit:cover;border-radius:4px;}
+.card-num{
+  position:absolute;top:3px;right:3px;
+  background:var(--red);color:#fff;
+  font-size:9px;font-weight:bold;
+  width:17px;height:17px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--red-l);z-index:10;
 }
-.card-back svg { width: 60%; height: 60%; }
-.card-face { transform: rotateY(180deg); overflow: hidden; }
-.card-face img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
-.card-num {
-  position: absolute; top: 3px; right: 3px;
-  background: var(--purple); color: var(--gold-l);
-  font-size: 9px; font-weight: bold;
-  width: 16px; height: 16px;
-  border-radius: 50%; display: flex;
-  align-items: center; justify-content: center;
-  border: 1px solid var(--gold-d);
-  z-index: 10;
+.card-slot:not(.flipped):not(.done):hover .card-back{border-color:var(--pink-l);}
+.cards-bottom{
+  display:flex;justify-content:space-between;
+  align-items:center;margin-top:8px;flex-wrap:wrap;gap:6px;
 }
-.card-slot:not(.flipped):not(.done):hover .card-back { border-color: var(--gold); }
-.cards-bottom {
-  display: flex; justify-content: space-between;
-  align-items: center; margin-top: 8px;
-  flex-wrap: wrap; gap: 6px;
+.btn-secondary{
+  padding:8px 14px;
+  background:linear-gradient(90deg,#200818,#081808);
+  color:var(--text2);border:1px solid var(--red-d);
+  border-radius:4px;font-family:Georgia,serif;
+  font-size:.85rem;cursor:pointer;
 }
-.btn-secondary {
-  padding: 8px 14px; background: var(--bg2);
-  color: var(--text2); border: 1px solid var(--gold-d);
-  border-radius: 4px; font-family: Georgia, serif;
-  font-size: .85rem; cursor: pointer;
+.btn-secondary:hover{color:var(--pink-l);}
+#btn-oracle{
+  padding:10px 22px;
+  background:linear-gradient(90deg,var(--green),var(--red));
+  color:#fff;border:none;border-radius:6px;
+  font-family:Georgia,serif;font-size:.95rem;
+  font-weight:bold;cursor:pointer;opacity:.45;
+  pointer-events:none;
+  box-shadow:0 3px 12px rgba(32,128,64,.3);
 }
-.btn-secondary:hover { color: var(--gold); }
-#btn-oracle {
-  padding: 10px 20px; background: var(--purple);
-  color: var(--gold-l); border: none; border-radius: 4px;
-  font-family: Georgia, serif; font-size: .95rem;
-  font-weight: bold; cursor: pointer;
-  transition: background .2s; opacity: .5;
-  pointer-events: none;
-}
-#btn-oracle.ready { opacity: 1; pointer-events: auto; }
-#btn-oracle.ready:hover { background: var(--purp-l); }
+#btn-oracle.ready{opacity:1;pointer-events:auto;}
+#btn-oracle.ready:hover{opacity:.85;}
 
 /* ── reading ── */
-#pg-reading { padding: 6px 8px; }
-.reading-row {
-  display: flex; align-items: flex-start;
-  background: var(--bg2); border-radius: 4px;
-  padding: 8px 10px; margin-bottom: 8px;
-  overflow-x: auto; gap: 8px;
+#pg-reading{padding:8px;}
+.reading-header{
+  text-align:center;padding:8px;margin-bottom:8px;
+  background:linear-gradient(90deg,#2a0010,#0a1a08,#2a0010);
+  border:1px solid var(--red-d);border-radius:6px;
+  color:var(--pink-l);font-size:.9rem;font-style:italic;
 }
-.reading-row .label { color: var(--gold); font-size: .85rem; white-space: nowrap; padding-top: 4px; }
-.sel-card { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 48px; }
-.sel-card img { width: 42px; height: 58px; border-radius: 3px; border: 1px solid var(--gold-d); }
-.sel-card .snum {
-  background: var(--purple); color: var(--gold-l);
-  font-size: 9px; font-weight: bold;
-  padding: 1px 5px; border-radius: 2px;
-}
-.reading-text {
-  background: #0e0620;
-  border: 1px solid var(--gold-d);
-  border-radius: 4px;
-  padding: 16px;
-  font-size: .9rem;
-  line-height: 1.7;
-  white-space: pre-wrap;
-  max-height: 55vh;
-  overflow-y: auto;
-  color: var(--text);
-}
-.reading-text.loading {
-  color: var(--text2);
-  text-align: center;
-  font-style: italic;
-}
-.reading-bottom {
-  display: flex; justify-content: space-between;
-  align-items: center; margin-top: 8px;
-  flex-wrap: wrap; gap: 6px;
-}
-.footer-brand { color: var(--text2); font-size: .78rem; font-style: italic; }
+.reading-header strong{color:var(--gold-l);font-style:normal;}
 
-/* ── scrollbar ── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--gold-d); border-radius: 3px; }
+/* Cada carta en la lectura — fila vertical */
+.reading-list{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
+.reading-item{
+  display:flex;align-items:flex-start;gap:12px;
+  background:linear-gradient(90deg,#1a0420,#08160a);
+  border:1px solid var(--red-d);border-radius:8px;
+  padding:10px 12px;
+}
+.reading-item.repeat-card{
+  border:2px solid var(--green-l);
+  background:linear-gradient(90deg,#0a2010,#200820);
+  box-shadow:0 0 14px rgba(64,192,112,.25);
+}
+.ri-img{flex-shrink:0;}
+.ri-img img{
+  width:62px;height:88px;border-radius:5px;
+  border:2px solid var(--red-d);object-fit:cover;
+}
+.repeat-card .ri-img img{border-color:var(--green-l);}
+.ri-info{flex:1;min-width:0;}
+.ri-num{
+  display:inline-block;
+  background:var(--red);color:#fff;
+  font-size:10px;font-weight:bold;
+  padding:2px 7px;border-radius:3px;margin-bottom:5px;
+}
+.repeat-card .ri-num{background:var(--green);}
+.ri-name{
+  font-size:1rem;font-weight:bold;color:var(--gold-l);
+  margin-bottom:5px;
+}
+.ri-sig{
+  font-size:.88rem;line-height:1.65;color:var(--text);
+}
+.ri-sig .sig-combo{color:var(--pink-l);font-style:italic;font-size:.82rem;}
+.ri-sig .sig-rev{color:var(--text2);font-style:italic;font-size:.82rem;}
+
+/* Sección repetidas */
+.repeat-section{
+  margin-top:10px;
+  background:linear-gradient(160deg,#0a2010,#1a0820);
+  border:2px solid var(--green-l);border-radius:8px;
+  padding:14px;
+  box-shadow:0 0 20px rgba(64,192,112,.2);
+}
+.repeat-title{
+  text-align:center;color:var(--green-l);
+  font-size:1rem;font-weight:bold;margin-bottom:6px;
+}
+.repeat-hint{
+  text-align:center;color:var(--pink-l);
+  font-size:.84rem;font-style:italic;margin-bottom:10px;
+  line-height:1.5;
+}
+
+/* Round badge */
+.round-badge{
+  text-align:center;margin-bottom:10px;
+}
+.round-badge span{
+  display:inline-block;
+  padding:4px 16px;border-radius:20px;
+  font-size:.82rem;font-weight:bold;letter-spacing:1px;
+}
+.round-badge.r1 span{background:var(--red);color:#fff;}
+.round-badge.r2 span{background:var(--purple);color:var(--gold-l);}
+
+.reading-footer{
+  display:flex;justify-content:space-between;
+  align-items:center;margin-top:12px;flex-wrap:wrap;gap:8px;
+}
+.footer-brand{color:var(--text2);font-size:.78rem;font-style:italic;}
+
+/* btn segunda tirada */
+#btn-segunda{
+  padding:11px 22px;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  color:var(--gold-l);border:none;border-radius:6px;
+  font-family:Georgia,serif;font-size:.95rem;
+  font-weight:bold;cursor:pointer;
+  box-shadow:0 3px 12px rgba(192,64,144,.35);
+}
+#btn-segunda:hover{opacity:.85;}
 
 /* ── responsive ── */
-@media (max-width: 500px) {
-  :root { --card-w: 52px; --card-h: 74px; }
-  .header h1 { font-size: 1.2rem; letter-spacing: 1px; }
+@media(max-width:500px){
+  :root{--card-w:52px;--card-h:74px;}
+  .header h1{font-size:1.2rem;letter-spacing:1px;}
+  .ri-img img{width:52px;height:74px;}
+  .ri-name{font-size:.9rem;}
+  .ri-sig{font-size:.82rem;}
 }
-@media (max-width: 380px) {
-  :root { --card-w: 46px; --card-h: 66px; }
-  .card-grid { grid-template-columns: repeat(6, var(--card-w)); gap: 2px; }
+@media(max-width:380px){
+  :root{--card-w:46px;--card-h:66px;}
+  .card-grid{grid-template-columns:repeat(6,var(--card-w));gap:2px;}
 }
 </style>
 </head>
@@ -305,86 +317,77 @@ body {
   <div class="sub">✦&nbsp;&nbsp;Astrología Maya&nbsp;&nbsp;✦</div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════
-     PÁGINA 1: Bienvenida
-═══════════════════════════════════════════════════ -->
+<!-- ═══════════ PÁGINA 1: Bienvenida ═══════════ -->
 <div class="page active" id="pg-welcome">
   <p class="welcome-stars">✦ ✦ ✦&nbsp;&nbsp;Las 48 Cartas Españolas&nbsp;&nbsp;✦ ✦ ✦</p>
   <div class="form-panel">
     <h2>✦&nbsp; Consulta el Oráculo &nbsp;✦</h2>
+    <div class="think-msg">
+      Cierra los ojos un momento.<br>
+      <strong>Piensa profundamente en tu problema,<br>
+      situación o lo que más te preocupa.</strong><br>
+      Cuando sientas que estás listo, elige tus cartas.
+    </div>
     <div class="form-group">
       <label>¿Cuál es tu nombre?</label>
       <input type="text" id="inp-name" placeholder="Tu nombre" autocomplete="off">
     </div>
-    <div class="form-group">
-      <label>¿Cuál es tu pregunta?</label>
-      <input type="text" id="inp-question" placeholder="Escribe tu consulta..." autocomplete="off">
-    </div>
     <button class="btn-primary" onclick="startReading()">✦&nbsp;&nbsp;INICIAR CONSULTA&nbsp;&nbsp;✦</button>
-    <p class="form-hint">Elige exactamente 5 cartas que sientas que te llaman</p>
-    <div class="api-section">
-      <button class="btn-toggle-api" onclick="toggleApiPanel()">⚙&nbsp; Configurar Claude AI</button>
-      <div id="api-panel" style="display:none">
-        <div class="form-group" style="margin-bottom:8px;margin-top:12px">
-          <label style="font-size:.85rem">API Key de Claude (opcional)</label>
-          <div class="api-key-row">
-            <input type="password" id="inp-apikey" placeholder="sk-ant-api03-...">
-            <button class="btn-save-key" onclick="saveApiKey()">Guardar</button>
-          </div>
-        </div>
-        <p class="form-hint" style="margin-top:4px">Tu clave se guarda solo en este navegador</p>
-      </div>
-      <div id="ai-status" class="ai-status inactive">● Modo estándar</div>
-    </div>
+    <p class="form-hint">Elegirás 7 cartas en cada tirada</p>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════
-     PÁGINA 2: Transición / Barajado
-═══════════════════════════════════════════════════ -->
+<!-- ═══════════ PÁGINA 2: Transición ═══════════ -->
 <div class="page" id="pg-transition">
   <canvas id="trans-canvas" width="280" height="280"></canvas>
   <div class="trans-inv" id="trans-inv-text">Preparando las fuerzas...</div>
   <div class="trans-sub" id="trans-step-text">Barajada 0 de 7</div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════
-     PÁGINA 3: Selección de cartas
-═══════════════════════════════════════════════════ -->
+<!-- ═══════════ PÁGINA 3: Selección de cartas ═══════════ -->
 <div class="page" id="pg-cards">
   <div class="info-bar">
     <span class="name" id="info-name"></span>
-    <span class="question" id="info-q"></span>
-    <span class="count" id="info-count">Cartas elegidas: 0/5</span>
+    <span class="count" id="info-count">Cartas elegidas: 0/7</span>
   </div>
-  <p class="cards-hint" id="cards-hint">Elige exactamente 5 cartas que sientas que te llaman</p>
+  <p class="cards-hint" id="cards-hint">Deja que tu intuición guíe tu mano — elige 7 cartas</p>
   <div class="card-grid" id="card-grid"></div>
   <div class="cards-bottom">
-    <button class="btn-secondary" onclick="showPage('pg-welcome')">↩ Nueva Consulta</button>
-    <button id="btn-oracle" onclick="goReading()">✦&nbsp;CONSULTAR EL ORÁCULO&nbsp;✦</button>
+    <button class="btn-secondary" onclick="showPage('pg-welcome');resetAll()">↩ Nueva Consulta</button>
+    <button id="btn-oracle" onclick="goReading()">✦&nbsp;VER MI LECTURA&nbsp;✦</button>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════
-     PÁGINA 4: Lectura
-═══════════════════════════════════════════════════ -->
+<!-- ═══════════ PÁGINA 4: Lectura ═══════════ -->
 <div class="page" id="pg-reading">
-  <div class="reading-row" id="reading-row">
-    <span class="label">Tu tirada:</span>
+  <div class="reading-header" id="reading-header"></div>
+  <div id="reading-list-r1" class="reading-list"></div>
+  <div id="repeat-section" style="display:none" class="repeat-section">
+    <div class="repeat-title">♻ CARTAS QUE SE REPITEN ♻</div>
+    <div class="repeat-hint">
+      Estas cartas aparecieron en <strong>ambas tiradas</strong>.<br>
+      Léelas con atención — el oráculo las repite por una razón.<br>
+      Piensa si tienen relación con lo que llevas en la mente.
+    </div>
+    <div id="repeat-list" class="reading-list"></div>
   </div>
-  <div class="reading-text" id="reading-text"></div>
-  <div class="reading-bottom">
+  <div id="reading-list-r2" class="reading-list" style="display:none"></div>
+  <div class="reading-footer">
     <span class="footer-brand">Centro Saturno Astrología Maya</span>
-    <button class="btn-primary" style="width:auto;padding:10px 20px"
-            onclick="showPage('pg-welcome');resetAll()">✦&nbsp;NUEVA TIRADA&nbsp;✦</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button id="btn-segunda" onclick="segundaTirada()" style="display:none">
+        ✦&nbsp;SEGUNDA TIRADA&nbsp;✦
+      </button>
+      <button class="btn-primary" style="width:auto;padding:10px 20px"
+              onclick="showPage('pg-welcome');resetAll()">↩&nbsp;NUEVA CONSULTA</button>
+    </div>
   </div>
 </div>
 
 <script>
 // ── Constantes ────────────────────────────────────────────────────────────────
-const MAX_CARDS = 5;
+const MAX_CARDS = 7;
 
-// ── Catálogo ──────────────────────────────────────────────────────────────────
 const SUITS = ["Oros","Copas","Espadas","Bastos"];
 const NUMS  = ["As","2","3","4","5","6","7","8","9","Sota","Caballo","Rey"];
 const NUM_FNAME = {
@@ -392,106 +395,81 @@ const NUM_FNAME = {
   "6":"seis","7":"siete","8":"ocho","9":"nueve",
   "Sota":"sota","Caballo":"caballo","Rey":"rey"
 };
-const SUIT_DIR = {
-  "Oros":"oros","Copas":"copas","Espadas":"espadas","Bastos":"bastos"
-};
+const SUIT_DIR = {"Oros":"oros","Copas":"copas","Espadas":"espadas","Bastos":"bastos"};
 
-function cardPath(num, suit) {
+function cardPath(num, suit){
   const folder = SUIT_DIR[suit];
-  const fname = (suit==="Copas" && num==="9") ? "9" : NUM_FNAME[num];
+  const fname  = (suit==="Copas" && num==="9") ? "9" : NUM_FNAME[num];
   return `cartas/${folder}/${fname} de ${folder}.png`;
 }
 
-// ── Invocaciones ──────────────────────────────────────────────────────────────
 const INVOCACIONES = [
   "Santa Muerte","Lucífugo","Nivirus",
   "Santa Muerte","San Simón","Lucifer","Santa Muerte"
 ];
 
-// ── Significados ──────────────────────────────────────────────────────────────
+// ── Significados completos del PDF ────────────────────────────────────────────
 const SIG = {
-"As de Oros":"Buena estrella, dinero seguro, ventura, buena suerte, felicidad, riqueza, hora oportuna, justicia, salud, encanto. Combinaciones: Con 9 de Oros → suerte completa. Con 5 de Oros → gran ganancia. Con 2 de Oros → recibo de dinero. Al revés: desgracia, infortunio, mala suerte, pérdida.",
-"2 de Oros":"Recibo, pleito, cobranza, interés, caudal, letra de cambio, dinero, negocio, avaricia. Al revés: persecución, soborno, robo, mal negocio.",
-"3 de Oros":"Buena estrella, felicidad cumplida, ventura. Al revés: detrimento, negocio frustrado, ruina.",
-"4 de Oros":"Empresa, determinación, negociación, intención, requerimiento, proposición de negocio.",
-"5 de Oros":"Ganancia, buen éxito, buena empresa, buena suerte en negocios y emprendimientos.",
-"6 de Oros":"Bolsa, abogado, cobranza, jugada, firma, satisfacción de dinero, buen augurio financiero.",
-"7 de Oros":"Lotería, juego, sorteo, sorpresa, prepararse a la suerte buena o mala.",
-"8 de Oros":"Suerte, porvenir, ganancias, poder, grandeza; el éxito material está asegurado con esfuerzo.",
-"9 de Oros":"Cobro completo, gran caudal, suerte completa y definitiva. Al revés: pérdida segura, gran disgusto por dinero.",
-"Sota de Oros":"Mujer rica o rubia; una mujer de buen color, adinerada y con recursos. Al revés: mujer ausente, menor o secundaria.",
-"Caballo de Oros":"Ausente rico; hombre joven adinerado que está lejos o viene de lejos. Al revés: joven rubio y rico de carácter impredecible.",
-"Rey de Oros":"Hombre rubio, rico y espléndido; persona de autoridad y recursos. Al revés: hombre ignorante del asunto o ausente.",
-"As de Copas":"Casar, convite, pasión, amor, encanto, dulzura, embriaguez, deleite, amabilidad. Al revés: ingratitud, abandono, falsedad.",
-"2 de Copas":"Pensamiento amoroso, buena intención, ternura maternal, amor de esposa, cariño, seguridad. Al revés: abandono, engaño amoroso.",
-"3 de Copas":"Embarazo, obstáculo, interrupción, entorpecimiento, dilación, inseguridad. Al revés: aborrecimiento, hastío, engaño.",
-"4 de Copas":"Triunfo amoroso, seguridad de amor, palabras amorosas, intenciones amorosas profundas.",
-"5 de Copas":"Convite, boda, bautizo, comida o cena, pensamientos amorosos, buena vida social.",
-"6 de Copas":"Ternura excesiva, gran pasión, amor indomable, firmeza en amor, furor amoroso.",
-"7 de Copas":"En puerta, preparación a lo bueno, disposición buena, efectos seguros próximos.",
-"8 de Copas":"Casamiento, cohabitación, permanencia, gran caudal emocional y material.",
-"9 de Copas":"Amor inocente, cariño filial o maternal, pensamientos buenos y tranquilos. Al revés: lágrimas por amor, pérdida del ser amado.",
-"Sota de Copas":"Mujer de buen color, alegre; amante, esposa o querida, rubia o de buen color. Al revés: mujer ausente o secundaria.",
-"Caballo de Copas":"Hombre calavera y festivo; hombre de carácter libre y pasional. Al revés: moreno y calavera con intenciones dudosas.",
-"Rey de Copas":"Hombre de buen color, calavera, dado al amor y a los placeres. Al revés: hombre ignorante o ausente.",
-"As de Espadas":"Pena, perfidia, envidia, celos, sentimiento, pasión, mala lengua, calumnia, disgusto. Al revés: simpatía, alegría, paz, olvido.",
-"2 de Espadas":"Carta, noticias, encuentro, llegada, viaje, periódico, escrito, causa, nota. Al revés: olvido, calumnia por escrito.",
-"3 de Espadas":"Justificación, justicia, buena sentencia, rectitud; a veces perfidia y dolor. Al revés: pérdida, sin esperanza.",
-"4 de Espadas":"Sufrimiento duro, celos, malas intenciones, guerra, honor de la guerra, heridas.",
-"5 de Espadas":"Sufrimiento, ideales, tristezas ocultas, afanes y disgustos internos.",
-"6 de Espadas":"De improviso, al acto, pronto; algo sucederá inesperadamente.",
-"7 de Espadas":"Porvenir incierto, largos sufrimientos, penas terribles, dolores internos.",
-"8 de Espadas":"Justicia, legalidad, notario, seguridad jurídica, integridad, honradez.",
-"9 de Espadas":"Seguridad, rectitud, constancia, afecto, persona honesta e íntegra.",
-"Sota de Espadas":"Mujer firme en el amor o celosa; mujer buena, celosa o con mala lengua.",
-"Caballo de Espadas":"Militar ausente; hombre de carácter recto y combativo que está lejos.",
-"Rey de Espadas":"Hombre de buen color o militar; figura de autoridad y decisión.",
-"As de Bastos":"Firmeza, desenfreno, asunto amoroso, dureza, buena cosecha, poderío, gloria. Al revés: miedo, mala cosecha, impotencia.",
-"2 de Bastos":"Cama, cuna, enfermedad, muerte, dolencia, aflicción, funeral, peligro. Al revés: holgazanería, adulterio, malas costumbres.",
-"3 de Bastos":"Amistad, casamiento, unión, concordia, reconciliación, hermano, esposa, reunión. Al revés: odio, divorcio, riña.",
-"4 de Bastos":"Fin, celo, cumplimiento, firmeza, constancia, seguridad, fin de sufrimiento.",
-"5 de Bastos":"Camino, cobranza, pasos, indignación, deseos de noticias, viaje o desplazamiento.",
-"6 de Bastos":"Viaje, embarcación, locomoción, coche, movimiento, viento, enseñamiento.",
-"7 de Bastos":"Agricultura, cosecha, sementera, trigo, pan, provecho, plantación, flores, gloria.",
-"8 de Bastos":"Paseos, buenos consejos, buenas ideas, caminar hacia la suerte.",
-"9 de Bastos":"Prosperidad, buen porvenir, buen éxito, buen camino, buen acierto y criterio.",
-"Sota de Bastos":"Mujer morena virtuosa; mujer pobre, honrada y de gran fortaleza interior.",
-"Caballo de Bastos":"Viajero moreno; hombre joven moreno en movimiento, portador de noticias.",
-"Rey de Bastos":"Hombre moreno, firme y generoso; figura de autoridad con carácter sólido."
+"As de Oros":   {main:"Buena estrella, dinero seguro, ventura, buena suerte, felicidad, riqueza, hora oportuna, justicia, salud, encanto.",combo:"Con 9 de Oros: suerte completa. Con 5 de Oros: gran ganancia. Con 2 de Oros: recibo de dinero. Con 8 de Oros: suerte inesperada. Con 9 de Bastos: propiedad floreciente. Con 9 de Copas: amar con buena suerte.",rev:"Desgracia, infortunio, mala suerte, pérdida, deshonra, mala estrella."},
+"2 de Oros":    {main:"Recibo, pleito, cobranza, interés, caudal, letra de cambio, dinero, negocio, avaricia.",combo:"",rev:"Persecución, soborno, robo, mal negocio, poca suerte."},
+"3 de Oros":    {main:"Buena estrella, felicidad cumplida, ventura plena en todos los aspectos.",combo:"",rev:"Detrimento, negocio frustrado, ruina, perdición."},
+"4 de Oros":    {main:"Empresa, determinación, negociación firme, requerimiento, proposición de negocio.",combo:"",rev:""},
+"5 de Oros":    {main:"Ganancia, buen éxito, buena empresa, buena suerte en negocios y emprendimientos.",combo:"Con As de Oros: gran ganancia.",rev:""},
+"6 de Oros":    {main:"Bolsa, abogado, cobranza, jugada, firma, satisfacción de dinero, buen augurio financiero.",combo:"",rev:""},
+"7 de Oros":    {main:"Lotería, juego, sorteo, sorpresa — prepararse para la suerte buena o mala.",combo:"",rev:""},
+"8 de Oros":    {main:"Suerte, porvenir, ganancias, poder, grandeza; el éxito material está asegurado con esfuerzo.",combo:"Con As de Oros: suerte inesperada.",rev:""},
+"9 de Oros":    {main:"Cobro completo, gran caudal, suerte completa y definitiva.",combo:"Con As de Oros: suerte completa.",rev:"Pérdida segura, gran disgusto por dinero."},
+"Sota de Oros": {main:"Mujer rica o rubia; persona adinerada y con recursos.",combo:"",rev:"Mujer ausente, menor o secundaria."},
+"Caballo de Oros":{main:"Ausente rico; hombre joven adinerado que está lejos o viene de lejos.",combo:"",rev:"Joven rubio y rico de carácter impredecible."},
+"Rey de Oros":  {main:"Hombre rubio, rico y espléndido; persona de autoridad y recursos.",combo:"",rev:"Hombre ignorante del asunto o ausente."},
+"As de Copas":  {main:"Casar, convite, pasión, amor, encanto, dulzura, embriaguez, deleite, amabilidad.",combo:"Con 9 de Copas: amar con buena suerte. Con 8 de Copas: casamiento por interés.",rev:"Ingratitud, abandono, falsedad."},
+"2 de Copas":   {main:"Pensamiento amoroso, buena intención, ternura maternal, amor de esposa, cariño, seguridad.",combo:"Con 2 de Espadas: proposición de casamiento.",rev:"Abandono, engaño amoroso."},
+"3 de Copas":   {main:"Embarazo, obstáculo, interrupción, entorpecimiento, dilación, inseguridad.",combo:"Con As de Oros: parto feliz.",rev:"Aborrecimiento, hastío, engaño."},
+"4 de Copas":   {main:"Triunfo amoroso, seguridad de amor, palabras amorosas, intenciones profundas.",combo:"Con As de Oros: triunfo amoroso.",rev:""},
+"5 de Copas":   {main:"Convite, boda, bautizo, comida o cena, pensamientos amorosos, buena vida social.",combo:"",rev:""},
+"6 de Copas":   {main:"Ternura excesiva, gran pasión, amor indomable, firmeza en amor, furor amoroso.",combo:"",rev:""},
+"7 de Copas":   {main:"En puerta, preparación a lo bueno, disposición favorable, efectos seguros próximos.",combo:"Con As de Oros: negocio en puerta.",rev:""},
+"8 de Copas":   {main:"Casamiento, cohabitación, permanencia, gran caudal emocional y material.",combo:"Con As de Copas: casamiento por interés.",rev:""},
+"9 de Copas":   {main:"Amor inocente, cariño filial o maternal, pensamientos buenos y tranquilos.",combo:"Con As de Oros: amar con buena suerte.",rev:"Lágrimas por amor, pérdida del ser amado."},
+"Sota de Copas":{main:"Mujer de buen color y alegre; amante, esposa o querida.",combo:"",rev:"Mujer ausente o secundaria."},
+"Caballo de Copas":{main:"Hombre calavera y festivo; hombre de carácter libre y pasional.",combo:"",rev:"Moreno y calavera con intenciones dudosas."},
+"Rey de Copas": {main:"Hombre de buen color, calavera, dado al amor y a los placeres.",combo:"",rev:"Hombre ignorante o ausente."},
+"As de Espadas":{main:"Pena, perfidia, envidia, celos, sentimiento, pasión, mala lengua, calumnia, disgusto.",combo:"",rev:"Simpatía, alegría, paz, olvido."},
+"2 de Espadas": {main:"Carta, noticias, encuentro, llegada, viaje, escrito, causa, nota.",combo:"Con As de Oros: sufrir para lograr. Con 2 de Copas: proposición de casamiento.",rev:"Olvido, calumnia por escrito."},
+"3 de Espadas": {main:"Justificación, justicia, buena sentencia, rectitud.",combo:"",rev:"Pérdida, sin esperanza, perfidia."},
+"4 de Espadas": {main:"Sufrimiento duro, celos, malas intenciones, guerra, heridas.",combo:"Con As de Oros: honor por la guerra.",rev:""},
+"5 de Espadas": {main:"Sufrimiento, ideales elevados, tristezas ocultas, afanes y disgustos internos.",combo:"",rev:""},
+"6 de Espadas": {main:"De improviso, al acto, pronto — algo sucederá inesperadamente.",combo:"",rev:""},
+"7 de Espadas": {main:"Porvenir incierto, largos sufrimientos, penas terribles, dolores internos.",combo:"Con As de Oros: glorioso porvenir.",rev:""},
+"8 de Espadas": {main:"Justicia, legalidad, notario, seguridad jurídica, integridad, honradez.",combo:"Con As de Oros: triunfo por la justicia.",rev:""},
+"9 de Espadas": {main:"Seguridad, rectitud, constancia, afecto, persona honesta e íntegra.",combo:"Con As de Oros: pleito ganado.",rev:""},
+"Sota de Espadas":{main:"Mujer firme en el amor o celosa; mujer buena pero celosa o con mala lengua.",combo:"",rev:""},
+"Caballo de Espadas":{main:"Militar ausente; hombre de carácter recto y combativo que está lejos.",combo:"",rev:"Moreno de intenciones dudosas y calavera."},
+"Rey de Espadas":{main:"Hombre de buen color o militar; figura de autoridad y decisión.",combo:"",rev:""},
+"As de Bastos":  {main:"Firmeza, desenfreno, asunto amoroso, dureza, buena cosecha, poderío, gloria.",combo:"",rev:"Miedo, mala cosecha, impotencia."},
+"2 de Bastos":   {main:"Cama, cuna, enfermedad, muerte, dolencia, aflicción, funeral, peligro.",combo:"Con As de Oros: llegada de pariente rico.",rev:"Holgazanería, adulterio, malas costumbres."},
+"3 de Bastos":   {main:"Amistad, casamiento, unión, concordia, reconciliación, hermano, esposa, reunión.",combo:"",rev:"Odio, divorcio, riña."},
+"4 de Bastos":   {main:"Fin, celo, cumplimiento, firmeza, constancia, seguridad, fin de sufrimiento.",combo:"",rev:""},
+"5 de Bastos":   {main:"Camino, cobranza, pasos, indignación, deseos de noticias, viaje o desplazamiento.",combo:"",rev:""},
+"6 de Bastos":   {main:"Viaje, embarcación, locomoción, coche, movimiento, viento, enseñamiento.",combo:"",rev:""},
+"7 de Bastos":   {main:"Agricultura, cosecha, sementera, trigo, pan, provecho, plantación, flores, gloria.",combo:"",rev:""},
+"8 de Bastos":   {main:"Paseos, buenos consejos, buenas ideas, caminar hacia la suerte.",combo:"Con As de Oros: caminar para la suerte.",rev:""},
+"9 de Bastos":   {main:"Prosperidad, buen porvenir, buen éxito, buen camino, buen acierto y criterio.",combo:"Con As de Oros: propiedad floreciente.",rev:""},
+"Sota de Bastos":{main:"Mujer morena virtuosa; mujer pobre, honrada y de gran fortaleza interior.",combo:"",rev:""},
+"Caballo de Bastos":{main:"Viajero moreno; hombre joven moreno en movimiento, portador de noticias.",combo:"",rev:""},
+"Rey de Bastos": {main:"Hombre moreno, firme y generoso; figura de autoridad con carácter sólido.",combo:"",rev:""}
 };
 
-// ── API Key ───────────────────────────────────────────────────────────────────
-function toggleApiPanel() {
-  const p = document.getElementById('api-panel');
-  p.style.display = p.style.display === 'none' ? 'block' : 'none';
-}
-
-function saveApiKey() {
-  const key = document.getElementById('inp-apikey').value.trim();
-  if (key) {
-    localStorage.setItem('cs_api_key', key);
-    document.getElementById('inp-apikey').value = '';
-    document.getElementById('api-panel').style.display = 'none';
-  }
-  updateAiStatus();
-}
-
-function updateAiStatus() {
-  const status = document.getElementById('ai-status');
-  const key = localStorage.getItem('cs_api_key');
-  if (key) {
-    status.textContent = '✦ Claude AI activo';
-    status.className = 'ai-status active';
-  } else {
-    status.textContent = '● Modo estándar';
-    status.className = 'ai-status inactive';
-  }
-}
-
 // ── Estado ────────────────────────────────────────────────────────────────────
-let userName="", userQuestion="", deck=[], selOrder=[], cardStates={};
+let userName="", deck=[], selOrder=[], cardStates={};
+let round=1, round1Cards=[], round2Cards=[];
 
-function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } }
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+}
 
 // ── Páginas ───────────────────────────────────────────────────────────────────
 function showPage(id){
@@ -501,20 +479,24 @@ function showPage(id){
 }
 
 function resetAll(){
-  selOrder=[]; cardStates={};
+  selOrder=[]; cardStates={}; round=1; round1Cards=[]; round2Cards=[];
   document.getElementById('inp-name').value='';
-  document.getElementById('inp-question').value='';
   document.getElementById('btn-oracle').classList.remove('ready');
-  document.getElementById('info-count').textContent='Cartas elegidas: 0/5';
-  document.getElementById('cards-hint').textContent='Elige exactamente 5 cartas que sientas que te llaman';
+  document.getElementById('info-count').textContent='Cartas elegidas: 0/7';
+  document.getElementById('cards-hint').textContent='Deja que tu intuición guíe tu mano — elige 7 cartas';
 }
 
-// ── Bienvenida ────────────────────────────────────────────────────────────────
+// ── Inicio ────────────────────────────────────────────────────────────────────
 function startReading(){
-  const n = document.getElementById('inp-name').value.trim();
-  const q = document.getElementById('inp-question').value.trim();
-  if(!n||!q) return;
-  userName=n; userQuestion=q;
+  const n=document.getElementById('inp-name').value.trim();
+  if(!n) return;
+  userName=n; round=1;
+  showPage('pg-transition');
+  runTransition();
+}
+
+function segundaTirada(){
+  round=2;
   showPage('pg-transition');
   runTransition();
 }
@@ -537,85 +519,69 @@ function runTransition(){
       document.getElementById('trans-inv-text').textContent=`✦  ${INVOCACIONES[step]}  ✦`;
       document.getElementById('trans-step-text').textContent=`Barajada ${step+1} de 7`;
       step++;
-      setTimeout(doShuffle, 430);
+      setTimeout(doShuffle,430);
     } else {
       document.getElementById('trans-inv-text').textContent='✦  Las fuerzas han sido invocadas  ✦';
       document.getElementById('trans-step-text').textContent='';
-      setTimeout(()=>{ cancelAnimationFrame(transAnimId); buildCards(); showPage('pg-cards'); }, 800);
+      setTimeout(()=>{ cancelAnimationFrame(transAnimId); buildCards(); showPage('pg-cards'); },800);
     }
   }
 
   function animTrans(){
-    const W=cv.width, H=cv.height;
-    ctx.fillStyle='#080310';
+    const W=cv.width,H=cv.height;
+    ctx.fillStyle='#0a0214';
     ctx.fillRect(0,0,W,H);
     for(let i=0;i<40;i++){
-      ctx.fillStyle=['#6a4a08','#303050','#501020'][Math.floor(Math.random()*3)];
+      ctx.fillStyle=['#600010','#200040','#003010'][Math.floor(Math.random()*3)];
       ctx.fillRect(Math.random()*W,Math.random()*H,1,1);
     }
-    const cx=W/2, cy=H/2;
+    const cx=W/2,cy=H/2;
     const r=70+8*Math.sin(transAngle*3*Math.PI/180);
     const pts=[];
     for(let k=0;k<5;k++){
       const a=(270+72*k+transAngle)*Math.PI/180;
-      pts.push([cx+r*Math.cos(a), cy+r*Math.sin(a)]);
+      pts.push([cx+r*Math.cos(a),cy+r*Math.sin(a)]);
     }
     ctx.beginPath();
     const order=[0,2,4,1,3,0];
     ctx.moveTo(pts[0][0],pts[0][1]);
     for(let i=1;i<order.length;i++) ctx.lineTo(pts[order[i]][0],pts[order[i]][1]);
-    ctx.strokeStyle='#d4a830'; ctx.lineWidth=2;
-    ctx.lineCap='round'; ctx.stroke();
+    ctx.strokeStyle='#e04060'; ctx.lineWidth=2; ctx.lineCap='round'; ctx.stroke();
     transAngle+=9;
     transAnimId=requestAnimationFrame(animTrans);
   }
   animTrans();
-  setTimeout(doShuffle, 200);
+  setTimeout(doShuffle,200);
 }
 
-// ── Cartas ────────────────────────────────────────────────────────────────────
+// ── Construcción del mazo ────────────────────────────────────────────────────
 function buildCards(){
   selOrder=[]; cardStates={};
   document.getElementById('btn-oracle').classList.remove('ready');
-  document.getElementById('info-count').textContent='Cartas elegidas: 0/5';
-  document.getElementById('info-name').textContent=`✦  ${userName}  |  `;
-  document.getElementById('cards-hint').textContent='Elige exactamente 5 cartas que sientas que te llaman';
-  const qTxt=userQuestion.length>50?userQuestion.slice(0,50)+'…':userQuestion;
-  document.getElementById('info-q').textContent=qTxt;
+  document.getElementById('info-count').textContent='Cartas elegidas: 0/7';
+  document.getElementById('info-name').textContent=`✦  ${userName}`;
+  const hint = round===2
+    ? '✦ Segunda tirada — elige otras 7 cartas'
+    : 'Deja que tu intuición guíe tu mano — elige 7 cartas';
+  document.getElementById('cards-hint').textContent=hint;
 
   const grid=document.getElementById('card-grid');
   grid.innerHTML='';
-
   deck.forEach(([num,suit],idx)=>{
     cardStates[idx]='down';
     const slot=document.createElement('div');
-    slot.className='card-slot';
-    slot.dataset.idx=idx;
-
-    const inner=document.createElement('div');
-    inner.className='card-inner';
-
-    const back=document.createElement('div');
-    back.className='card-back';
+    slot.className='card-slot'; slot.dataset.idx=idx;
+    const inner=document.createElement('div'); inner.className='card-inner';
+    const back=document.createElement('div'); back.className='card-back';
     back.innerHTML=pentaSVG();
-
-    const face=document.createElement('div');
-    face.className='card-face';
+    const face=document.createElement('div'); face.className='card-face';
     const img=document.createElement('img');
-    img.src=cardPath(num,suit);
-    img.alt=`${num} de ${suit}`;
-    img.loading='lazy';
+    img.src=cardPath(num,suit); img.alt=`${num} de ${suit}`; img.loading='lazy';
     face.appendChild(img);
-
-    const numBadge=document.createElement('div');
-    numBadge.className='card-num';
+    const numBadge=document.createElement('div'); numBadge.className='card-num';
     numBadge.style.display='none';
-
-    inner.appendChild(back);
-    inner.appendChild(face);
-    slot.appendChild(inner);
-    slot.appendChild(numBadge);
-
+    inner.appendChild(back); inner.appendChild(face);
+    slot.appendChild(inner); slot.appendChild(numBadge);
     slot.addEventListener('click',()=>flipCard(idx));
     grid.appendChild(slot);
   });
@@ -625,226 +591,163 @@ function pentaSVG(){
   const pts=[];
   for(let k=0;k<5;k++){
     const a=(270+72*k)*Math.PI/180;
-    pts.push([50+38*Math.cos(a), 50+38*Math.sin(a)]);
+    pts.push([50+38*Math.cos(a),50+38*Math.sin(a)]);
   }
   const order=[0,2,4,1,3,0];
   let d=`M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
   for(let i=1;i<order.length;i++) d+=`L${pts[order[i]][0].toFixed(1)},${pts[order[i]][1].toFixed(1)}`;
   return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="50" cy="50" r="44" fill="none" stroke="#6a4a08" stroke-width="1" stroke-dasharray="3,4"/>
-    <path d="${d}" fill="none" stroke="#d4a830" stroke-width="1.5" stroke-linejoin="round"/>
+    <circle cx="50" cy="50" r="44" fill="none" stroke="#600010" stroke-width="1" stroke-dasharray="3,4"/>
+    <path d="${d}" fill="none" stroke="#e04060" stroke-width="1.5" stroke-linejoin="round"/>
   </svg>`;
 }
 
 function flipCard(idx){
   if(cardStates[idx]==='up') return;
-  if(selOrder.length >= MAX_CARDS) return;
-
-  cardStates[idx]='up';
-  selOrder.push(idx);
+  if(selOrder.length>=MAX_CARDS) return;
+  cardStates[idx]='up'; selOrder.push(idx);
   const orderN=selOrder.length;
-
   const slot=document.querySelector(`.card-slot[data-idx="${idx}"]`);
   slot.classList.add('flipped');
-
   setTimeout(()=>{
     const badge=slot.querySelector('.card-num');
-    badge.textContent=orderN;
-    badge.style.display='flex';
-  }, 470);
-
+    badge.textContent=orderN; badge.style.display='flex';
+  },470);
   document.getElementById('info-count').textContent=`Cartas elegidas: ${orderN}/${MAX_CARDS}`;
-
-  if(orderN >= MAX_CARDS){
+  if(orderN>=MAX_CARDS){
     document.getElementById('btn-oracle').classList.add('ready');
-    document.getElementById('cards-hint').textContent='✦ ¡Has elegido tus 5 cartas! — Consulta el Oráculo';
-    document.querySelectorAll('.card-slot:not(.flipped)').forEach(s=>{
-      s.classList.add('done');
-    });
+    document.getElementById('cards-hint').textContent='✦ ¡7 cartas elegidas! — Presiona para ver tu lectura';
+    document.querySelectorAll('.card-slot:not(.flipped)').forEach(s=>s.classList.add('done'));
   }
 }
 
-// ── Claude AI desde el navegador ──────────────────────────────────────────────
-async function generateReadingAI(name, question, cards, apiKey) {
-  let cardsText = '';
-  cards.forEach(([num, suit], i) => {
-    const key = `${num} de ${suit}`;
-    const sig = SIG[key] || '';
-    const firstLine = sig.split('\n')[0].split('.')[0];
-    cardsText += `Carta ${i+1}: ${key}\nSignificado: ${firstLine}\n\n`;
-  });
+// ── Construir item de lectura ─────────────────────────────────────────────────
+function buildReadingItem(num, suit, orderN, isRepeat){
+  const key=`${num} de ${suit}`;
+  const data=SIG[key]||{main:'',combo:'',rev:''};
+  const div=document.createElement('div');
+  div.className='reading-item'+(isRepeat?' repeat-card':'');
 
-  const cardNames = cards.map(([num, suit]) => `${num} de ${suit}`);
-  const seen = new Set();
-  let combosText = '';
-  cardNames.forEach(key => {
-    const sigText = SIG[key] || '';
-    cardNames.forEach(other => {
-      const pair = [key, other].sort().join('|');
-      if(other !== key && sigText.includes(other) && !seen.has(pair)){
-        seen.add(pair);
-        combosText += `  • ${key} + ${other}\n`;
-      }
+  const imgDiv=document.createElement('div'); imgDiv.className='ri-img';
+  const img=document.createElement('img');
+  img.src=cardPath(num,suit); img.alt=key;
+  imgDiv.appendChild(img);
+
+  const info=document.createElement('div'); info.className='ri-info';
+
+  const numSpan=document.createElement('span'); numSpan.className='ri-num';
+  numSpan.textContent=isRepeat?'♻ REPETIDA':`Carta ${orderN}`;
+
+  const name=document.createElement('div'); name.className='ri-name';
+  name.textContent=key;
+
+  const sig=document.createElement('div'); sig.className='ri-sig';
+  let sigHtml=`<span>${data.main}</span>`;
+  if(data.combo) sigHtml+=`<br><span class="sig-combo">✦ Combinaciones: ${data.combo}</span>`;
+  if(data.rev)   sigHtml+=`<br><span class="sig-rev">↩ Al revés: ${data.rev}</span>`;
+  sig.innerHTML=sigHtml;
+
+  info.appendChild(numSpan);
+  info.appendChild(name);
+  info.appendChild(sig);
+  div.appendChild(imgDiv);
+  div.appendChild(info);
+  return div;
+}
+
+// ── Mostrar lectura ───────────────────────────────────────────────────────────
+function goReading(){
+  if(selOrder.length<MAX_CARDS) return;
+  const selected=selOrder.map(i=>deck[i]);
+
+  if(round===1){
+    round1Cards=selected;
+    const list=document.getElementById('reading-list-r1');
+    list.innerHTML='';
+    selected.forEach(([num,suit],i)=>{
+      list.appendChild(buildReadingItem(num,suit,i+1,false));
     });
-  });
 
-  const prompt = `Eres el oráculo del Centro Saturno, experto en la baraja española de 48 cartas según el libro clásico "Lectura de las 48 cartas y combinaciones".
+    document.getElementById('reading-list-r2').style.display='none';
+    document.getElementById('repeat-section').style.display='none';
 
-Consultante: ${name}
-Pregunta: "${question}"
+    document.getElementById('reading-header').innerHTML=
+      `✦ <strong>${userName}</strong> — Primera Tirada — ` +
+      `<span style="color:var(--pink-l)">Lee cada carta y su significado</span>`;
 
-Las 5 cartas en el orden exacto en que salieron:
-${cardsText}${combosText ? `Combinaciones especiales del libro entre estas cartas:\n${combosText}\n` : ''}INSTRUCCIÓN CLAVE — ESTILO DE LECTURA DEL LIBRO:
-Detecta si ${name} es hombre o mujer por el nombre y adapta el género gramatical.
-Lee las 5 cartas como UNA SOLA NARRATIVA DIRECTA encadenando los significados en orden.
+    document.getElementById('btn-segunda').style.display='inline-block';
+    showPage('pg-reading');
 
-Ejemplo exacto del estilo del libro:
-"Los éxitos de un hombre de malas costumbres está fracasando en prosperidad por sus malas costumbres, enfermedades..."
-
-Reglas estrictas:
-- NO uses secciones ni posiciones (prohibido: "El Pasado", "El Presente", etc.)
-- NO uses viñetas, listas ni asteriscos
-- Una sola historia fluida de 3 a 5 oraciones que una los 5 significados en orden
-- La última oración responde directamente a "${question}"
-- Si hay combinaciones especiales, incorpóralas dentro de la narrativa
-- Tono directo, claro y espiritual — sin relleno`;
-
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-      'anthropic-dangerous-direct-browser-access': 'true',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 800,
-      messages: [{ role: 'user', content: prompt }]
-    })
-  });
-
-  if(!response.ok){
-    const err = await response.text();
-    throw new Error(err);
-  }
-  const data = await response.json();
-  return data.content[0].text;
-}
-
-// ── Lectura estándar (fallback) ───────────────────────────────────────────────
-function keywords(key){
-  const text = SIG[key] || '';
-  const line = text.split('\n').find(l => l.trim() && !l.includes('Combinaci') && !l.includes('Al revés')) || '';
-  return line.split(',').slice(0,3).map(s=>s.trim()).join(', ').toLowerCase();
-}
-
-function generateReading(name, question, cards){
-  // Detectar género por nombre
-  const nl = name.trim().toLowerCase();
-  const femaleEnds = ['a','ia','ina','ela','ella','ita','ana','ena'];
-  const isFemale = femaleEnds.some(e => nl.endsWith(e));
-  const subject = isFemale ? 'una mujer' : 'un hombre';
-
-  const k  = cards.map(([n,s]) => `${n} de ${s}`);
-  const kw = k.map(key => keywords(key));
-
-  let out = '';
-  out += `✦ LECTURA PARA ${name.toUpperCase()} ✦\n\n`;
-  out += `Consulta: "${question}"\n`;
-  out += '═'.repeat(44) + '\n\n';
-
-  // Narrativa encadenada — mismo estilo del libro
-  out += (
-    `Las cartas revelan para ${name}, ${subject} en quien ${kw[0]}, ` +
-    `que se encuentra ante ${kw[1]}, ` +
-    `lo cual conduce hacia ${kw[2]}. ` +
-    `A esto se suma la energía del ${k[3].split(' de ')[1]}: ${kw[3]}, ` +
-    `y el resultado final apunta hacia ${kw[4]}.\n\n`
-  );
-
-  out += `Sobre "${question}": el oráculo habla claro — actúa con determinación y los astros te acompañarán.\n\n`;
-  out += '✦  Centro Saturno Astrología Maya  ✦';
-  return out;
-}
-
-// ── Lectura ───────────────────────────────────────────────────────────────────
-async function goReading(){
-  if(selOrder.length < MAX_CARDS) return;
-  const selectedCards=selOrder.map(i=>deck[i]);
-
-  const row=document.getElementById('reading-row');
-  row.innerHTML='<span class="label">Tu tirada:</span>';
-  selectedCards.forEach(([num,suit],i)=>{
-    const col=document.createElement('div');
-    col.className='sel-card';
-    const img=document.createElement('img');
-    img.src=cardPath(num,suit);
-    img.alt=`${num} de ${suit}`;
-    const snum=document.createElement('div');
-    snum.className='snum'; snum.textContent=i+1;
-    col.appendChild(img); col.appendChild(snum);
-    row.appendChild(col);
-  });
-
-  const rtEl=document.getElementById('reading-text');
-  showPage('pg-reading');
-
-  const apiKey=localStorage.getItem('cs_api_key');
-  if(apiKey){
-    rtEl.textContent='✦  Consultando el Oráculo...  ✦\n\nLas fuerzas espirituales están interpretando tu tirada.\nUn momento, por favor...';
-    rtEl.className='reading-text loading';
-    try{
-      const text=await generateReadingAI(userName, userQuestion, selectedCards, apiKey);
-      rtEl.textContent=text;
-      rtEl.className='reading-text';
-    } catch(e){
-      rtEl.textContent=generateReading(userName, userQuestion, selectedCards);
-      rtEl.className='reading-text';
-    }
   } else {
-    rtEl.textContent=generateReading(userName, userQuestion, selectedCards);
-    rtEl.className='reading-text';
+    round2Cards=selected;
+
+    // Encontrar repetidas
+    const keys1=new Set(round1Cards.map(([n,s])=>`${n} de ${s}`));
+    const repeated=round2Cards.filter(([n,s])=>keys1.has(`${n} de ${s}`));
+
+    // Mostrar segunda tirada
+    const list2=document.getElementById('reading-list-r2');
+    list2.innerHTML='';
+    // badge ronda 2
+    const badge=document.createElement('div'); badge.className='round-badge r2';
+    badge.innerHTML='<span>✦ SEGUNDA TIRADA ✦</span>';
+    list2.appendChild(badge);
+    selected.forEach(([num,suit],i)=>{
+      const isRep=keys1.has(`${num} de ${suit}`);
+      list2.appendChild(buildReadingItem(num,suit,i+1,isRep));
+    });
+    list2.style.display='flex'; list2.style.flexDirection='column';
+
+    // Mostrar repetidas
+    if(repeated.length>0){
+      const repList=document.getElementById('repeat-list');
+      repList.innerHTML='';
+      repeated.forEach(([num,suit])=>{
+        repList.appendChild(buildReadingItem(num,suit,0,true));
+      });
+      document.getElementById('repeat-section').style.display='block';
+    }
+
+    document.getElementById('reading-header').innerHTML=
+      `✦ <strong>${userName}</strong> — Ambas Tiradas — ` +
+      `<span style="color:var(--green-l)">Observa las cartas que se repiten</span>`;
+
+    document.getElementById('btn-segunda').style.display='none';
+    showPage('pg-reading');
   }
 }
 
-// ── Header canvas (pentagrama + Saturno) ─────────────────────────────────────
+// ── Header canvas ─────────────────────────────────────────────────────────────
 function drawHeader(){
   const hdr=document.getElementById('site-header');
   const cv=document.getElementById('hdr-canvas');
-  const W=hdr.offsetWidth, H=hdr.offsetHeight;
+  const W=hdr.offsetWidth,H=hdr.offsetHeight;
   cv.width=W; cv.height=H;
   const ctx=cv.getContext('2d');
   ctx.clearRect(0,0,W,H);
   const cy=H/2;
-
-  const pr=H*0.35, px=pr+14;
-  drawPenta(ctx,px,cy,pr);
-
-  const sr=H*0.25, sx=W-sr*2-18;
-  drawSaturn(ctx,sx,cy,sr);
+  drawPenta(ctx,H*.35+14,cy,H*.35);
+  drawSaturn(ctx,W-H*.25*2-18,cy,H*.25);
 }
 
 function drawPenta(ctx,cx,cy,r){
   const pts=[];
   for(let k=0;k<5;k++){
     const a=(270+72*k)*Math.PI/180;
-    pts.push([cx+r*Math.cos(a), cy+r*Math.sin(a)]);
+    pts.push([cx+r*Math.cos(a),cy+r*Math.sin(a)]);
   }
-  ctx.beginPath();
-  ctx.moveTo(pts[0][0],pts[0][1]);
+  ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
   const order=[0,2,4,1,3,0];
   for(let i=1;i<order.length;i++) ctx.lineTo(pts[order[i]][0],pts[order[i]][1]);
-  ctx.strokeStyle='#d4a830'; ctx.lineWidth=2;
+  ctx.strokeStyle='#e04060'; ctx.lineWidth=2;
   ctx.lineCap='round'; ctx.lineJoin='round'; ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(cx,cy,r+4,0,Math.PI*2);
-  ctx.strokeStyle='#6a4a08'; ctx.lineWidth=1; ctx.setLineDash([3,4]); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx,cy,r+4,0,Math.PI*2);
+  ctx.strokeStyle='#600010'; ctx.lineWidth=1; ctx.setLineDash([3,4]); ctx.stroke();
   ctx.setLineDash([]);
 }
 
 function drawSaturn(ctx,cx,cy,r){
-  const rw=r*1.9, rh=r*0.42;
+  const rw=r*1.9,rh=r*.42;
   ctx.beginPath(); ctx.ellipse(cx,cy,rw,rh,0,Math.PI,0);
   ctx.strokeStyle='#d4a830'; ctx.lineWidth=2; ctx.stroke();
   ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
@@ -857,15 +760,9 @@ function drawSaturn(ctx,cx,cy,r){
   ctx.strokeStyle='#d4a830'; ctx.lineWidth=2; ctx.stroke();
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
-window.addEventListener('load',()=>{
-  drawHeader();
-  updateAiStatus();
-  const saved = localStorage.getItem('cs_api_key');
-  if(saved) document.getElementById('inp-apikey').value = saved;
-});
-window.addEventListener('resize',()=>{ drawHeader(); });
-document.getElementById('inp-question').addEventListener('keydown',e=>{
+window.addEventListener('load',()=>drawHeader());
+window.addEventListener('resize',()=>drawHeader());
+document.getElementById('inp-name').addEventListener('keydown',e=>{
   if(e.key==='Enter') startReading();
 });
 </script>
