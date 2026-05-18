@@ -361,25 +361,18 @@ body{
 <!-- ═══════════ PÁGINA 4: Lectura ═══════════ -->
 <div class="page" id="pg-reading">
   <div class="reading-header" id="reading-header"></div>
-  <div id="reading-list-r1" class="reading-list"></div>
-  <div id="repeat-section" style="display:none" class="repeat-section">
-    <div class="repeat-title">♻ CARTAS QUE SE REPITEN ♻</div>
-    <div class="repeat-hint">
-      Estas cartas aparecieron en <strong>ambas tiradas</strong>.<br>
-      Léelas con atención — el oráculo las repite por una razón.<br>
-      Piensa si tienen relación con lo que llevas en la mente.
-    </div>
-    <div id="repeat-list" class="reading-list"></div>
-  </div>
-  <div id="reading-list-r2" class="reading-list" style="display:none"></div>
+  <div id="reading-container" class="reading-list"></div>
   <div class="reading-footer">
     <span class="footer-brand">Centro Saturno Astrología Maya</span>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button id="btn-segunda" onclick="segundaTirada()" style="display:none">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <button id="btn-siguiente" onclick="nextTirada()"
+        style="padding:11px 22px;background:linear-gradient(90deg,var(--purple),var(--pink));color:var(--gold-l);border:none;border-radius:6px;font-family:Georgia,serif;font-size:.95rem;font-weight:bold;cursor:pointer;box-shadow:0 3px 12px rgba(192,64,144,.35);">
         ✦&nbsp;SEGUNDA TIRADA&nbsp;✦
       </button>
-      <button class="btn-primary" style="width:auto;padding:10px 20px"
-              onclick="showPage('pg-welcome');resetAll()">↩&nbsp;NUEVA CONSULTA</button>
+      <button id="btn-nueva" onclick="showPage('pg-welcome');resetAll()"
+        style="display:none;padding:11px 22px;background:linear-gradient(90deg,var(--red),var(--purple));color:#fff;border:none;border-radius:6px;font-family:Georgia,serif;font-size:.95rem;font-weight:bold;cursor:pointer;">
+        ↩&nbsp;NUEVA CONSULTA
+      </button>
     </div>
   </div>
 </div>
@@ -461,8 +454,9 @@ const SIG = {
 };
 
 // ── Estado ────────────────────────────────────────────────────────────────────
+const MAX_ROUNDS = 3;
 let userName="", deck=[], selOrder=[], cardStates={};
-let round=1, round1Cards=[], round2Cards=[];
+let round=1, roundsCards=[[],[],[]];
 
 function shuffle(arr){
   for(let i=arr.length-1;i>0;i--){
@@ -479,7 +473,7 @@ function showPage(id){
 }
 
 function resetAll(){
-  selOrder=[]; cardStates={}; round=1; round1Cards=[]; round2Cards=[];
+  selOrder=[]; cardStates={}; round=1; roundsCards=[[],[],[]];
   document.getElementById('inp-name').value='';
   document.getElementById('btn-oracle').classList.remove('ready');
   document.getElementById('info-count').textContent='Cartas elegidas: 0/7';
@@ -490,13 +484,13 @@ function resetAll(){
 function startReading(){
   const n=document.getElementById('inp-name').value.trim();
   if(!n) return;
-  userName=n; round=1;
+  userName=n; round=1; roundsCards=[[],[],[]];
   showPage('pg-transition');
   runTransition();
 }
 
-function segundaTirada(){
-  round=2;
+function nextTirada(){
+  round++;
   showPage('pg-transition');
   runTransition();
 }
@@ -560,8 +554,9 @@ function buildCards(){
   document.getElementById('btn-oracle').classList.remove('ready');
   document.getElementById('info-count').textContent='Cartas elegidas: 0/7';
   document.getElementById('info-name').textContent=`✦  ${userName}`;
-  const hint = round===2
-    ? '✦ Segunda tirada — elige otras 7 cartas'
+  const labels=['','Segunda','Tercera'];
+  const hint = round>1
+    ? `✦ ${labels[round-1]} tirada — elige otras 7 cartas`
     : 'Deja que tu intuición guíe tu mano — elige 7 cartas';
   document.getElementById('cards-hint').textContent=hint;
 
@@ -656,64 +651,104 @@ function buildReadingItem(num, suit, orderN, isRepeat){
 }
 
 // ── Mostrar lectura ───────────────────────────────────────────────────────────
+const ROUND_COLORS=['var(--red)','var(--purple)','var(--pink)'];
+const ROUND_NAMES =['PRIMERA','SEGUNDA','TERCERA'];
+
+function buildRoundBadge(r){
+  const d=document.createElement('div');
+  d.className='round-badge';
+  d.innerHTML=`<span style="background:${ROUND_COLORS[r]};color:#fff;display:inline-block;padding:4px 18px;border-radius:20px;font-weight:bold;letter-spacing:1px;font-size:.82rem">✦ ${ROUND_NAMES[r]} TIRADA ✦</span>`;
+  return d;
+}
+
 function goReading(){
   if(selOrder.length<MAX_CARDS) return;
   const selected=selOrder.map(i=>deck[i]);
+  roundsCards[round-1]=selected;
 
-  if(round===1){
-    round1Cards=selected;
-    const list=document.getElementById('reading-list-r1');
-    list.innerHTML='';
+  const container=document.getElementById('reading-container');
+  const btnSig=document.getElementById('btn-siguiente');
+  const btnNueva=document.getElementById('btn-nueva');
+
+  if(round < MAX_ROUNDS){
+    // Mostrar sólo la tirada actual (limpiar si es primera)
+    if(round===1) container.innerHTML='';
+    container.appendChild(buildRoundBadge(round-1));
     selected.forEach(([num,suit],i)=>{
-      list.appendChild(buildReadingItem(num,suit,i+1,false));
+      container.appendChild(buildReadingItem(num,suit,i+1,false));
     });
 
-    document.getElementById('reading-list-r2').style.display='none';
-    document.getElementById('repeat-section').style.display='none';
+    const nextName=ROUND_NAMES[round];
+    btnSig.textContent=`✦ ${nextName} TIRADA ✦`;
+    btnSig.style.display='inline-block';
+    btnNueva.style.display='none';
 
     document.getElementById('reading-header').innerHTML=
-      `✦ <strong>${userName}</strong> — Primera Tirada — ` +
+      `✦ <strong>${userName}</strong> — ${ROUND_NAMES[round-1].charAt(0)+ROUND_NAMES[round-1].slice(1).toLowerCase()} Tirada — ` +
       `<span style="color:var(--pink-l)">Lee cada carta y su significado</span>`;
 
-    document.getElementById('btn-segunda').style.display='inline-block';
     showPage('pg-reading');
+    window.scrollTo(0,0);
 
   } else {
-    round2Cards=selected;
+    // Tercera tirada — mostrar todo + repetidas
+    container.innerHTML='';
 
-    // Encontrar repetidas
-    const keys1=new Set(round1Cards.map(([n,s])=>`${n} de ${s}`));
-    const repeated=round2Cards.filter(([n,s])=>keys1.has(`${n} de ${s}`));
-
-    // Mostrar segunda tirada
-    const list2=document.getElementById('reading-list-r2');
-    list2.innerHTML='';
-    // badge ronda 2
-    const badge=document.createElement('div'); badge.className='round-badge r2';
-    badge.innerHTML='<span>✦ SEGUNDA TIRADA ✦</span>';
-    list2.appendChild(badge);
-    selected.forEach(([num,suit],i)=>{
-      const isRep=keys1.has(`${num} de ${suit}`);
-      list2.appendChild(buildReadingItem(num,suit,i+1,isRep));
-    });
-    list2.style.display='flex'; list2.style.flexDirection='column';
-
-    // Mostrar repetidas
-    if(repeated.length>0){
-      const repList=document.getElementById('repeat-list');
-      repList.innerHTML='';
-      repeated.forEach(([num,suit])=>{
-        repList.appendChild(buildReadingItem(num,suit,0,true));
+    // Contar cuántas tiradas tiene cada carta
+    const keyCount={};
+    roundsCards.forEach(cards=>{
+      cards.forEach(([n,s])=>{
+        const k=`${n} de ${s}`;
+        keyCount[k]=(keyCount[k]||0)+1;
       });
-      document.getElementById('repeat-section').style.display='block';
+    });
+    const repeats=new Set(Object.keys(keyCount).filter(k=>keyCount[k]>=2));
+
+    // Mostrar las 3 tiradas
+    for(let r=0;r<MAX_ROUNDS;r++){
+      container.appendChild(buildRoundBadge(r));
+      roundsCards[r].forEach(([num,suit],i)=>{
+        container.appendChild(buildReadingItem(num,suit,i+1,repeats.has(`${num} de ${suit}`)));
+      });
     }
 
+    // Sección cartas que influyen
+    if(repeats.size>0){
+      const repBadge=document.createElement('div');
+      repBadge.innerHTML=`<div style="background:var(--green);color:#fff;text-align:center;padding:6px;border-radius:20px;font-weight:bold;font-size:.85rem;margin:16px 0 6px">♻ CARTAS QUE INFLUYEN EN TI ♻</div>`;
+      container.appendChild(repBadge);
+
+      const hint=document.createElement('div');
+      hint.style.cssText='text-align:center;color:var(--green-l);font-style:italic;font-size:.88rem;margin-bottom:10px;line-height:1.6;background:var(--green-d);padding:10px;border-radius:6px;border:1px solid var(--green-l)';
+      hint.textContent='Estas cartas se repitieron en tus tiradas. Son las fuerzas que verdaderamente influyen en ti ahora mismo. Léelas con calma y piensa en su relación con lo que tienes en mente.';
+      container.appendChild(hint);
+
+      const shown=new Set();
+      roundsCards.forEach(cards=>{
+        cards.forEach(([num,suit])=>{
+          const k=`${num} de ${suit}`;
+          if(repeats.has(k)&&!shown.has(k)){
+            shown.add(k);
+            container.appendChild(buildReadingItem(num,suit,0,true));
+          }
+        });
+      });
+
+      const finalMsg=document.createElement('div');
+      finalMsg.style.cssText='text-align:center;color:var(--gold-l);font-style:italic;font-size:1rem;padding:18px;font-weight:bold';
+      finalMsg.textContent='✦  Cuando estés listo, haz una nueva consulta  ✦';
+      container.appendChild(finalMsg);
+    }
+
+    btnSig.style.display='none';
+    btnNueva.style.display='inline-block';
+
     document.getElementById('reading-header').innerHTML=
-      `✦ <strong>${userName}</strong> — Ambas Tiradas — ` +
+      `✦ <strong>${userName}</strong> — Tres Tiradas Completadas — ` +
       `<span style="color:var(--green-l)">Observa las cartas que se repiten</span>`;
 
-    document.getElementById('btn-segunda').style.display='none';
     showPage('pg-reading');
+    window.scrollTo(0,0);
   }
 }
 
