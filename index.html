@@ -294,6 +294,63 @@ body{
 }
 #btn-segunda:hover{opacity:.85;}
 
+/* ── tiktok banner ── */
+.tiktok-banner{
+  display:flex;align-items:center;justify-content:center;
+  gap:10px;flex-wrap:wrap;padding:8px 16px;
+  background:linear-gradient(90deg,#0d0010,#180000,#0d0010);
+  border-bottom:2px solid #ff2d55;text-align:center;
+}
+.tt-banner-icon{font-size:1.1rem;color:#ff2d55;}
+.tt-banner-text{color:var(--gold-l);font-size:.85rem;font-style:italic;letter-spacing:.3px;}
+.tt-banner-btn{
+  display:inline-block;padding:5px 16px;
+  background:linear-gradient(90deg,#ff2d55,#6a0020);
+  color:#fff;border-radius:20px;font-family:Georgia,serif;
+  font-size:.82rem;font-weight:bold;text-decoration:none;
+  border:1px solid #ff2d55;transition:opacity .2s;white-space:nowrap;
+}
+.tt-banner-btn:hover{opacity:.8;}
+
+/* ── tiktok intermediate page ── */
+#pg-tiktok{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  min-height:80vh;padding:24px 16px;text-align:center;
+}
+.tt-inter-wrap{
+  max-width:400px;width:100%;
+  background:linear-gradient(160deg,#180000,#0d0010,#001810);
+  border:2px solid #ff2d55;border-radius:12px;padding:36px 24px;
+  box-shadow:0 0 40px rgba(255,45,85,.2);
+}
+.tt-inter-icon{font-size:3.5rem;margin-bottom:12px;animation:ttPulse 2s ease-in-out infinite;}
+@keyframes ttPulse{0%,100%{text-shadow:0 0 10px #ff2d55}50%{text-shadow:0 0 30px #ff2d55,0 0 60px #ff005580}}
+.tt-inter-title{
+  font-size:1.25rem;color:var(--gold-l);font-weight:bold;
+  margin-bottom:8px;letter-spacing:1px;
+}
+.tt-inter-sub{
+  color:var(--pink-l);font-size:.92rem;font-style:italic;
+  margin-bottom:28px;line-height:1.6;
+}
+.tt-inter-main-btn{
+  display:block;width:100%;padding:14px;margin-bottom:14px;
+  background:linear-gradient(90deg,#ff2d55,#6a0020);
+  color:#fff;border:none;border-radius:8px;
+  font-family:Georgia,serif;font-size:1.05rem;
+  font-weight:bold;cursor:pointer;letter-spacing:1px;
+  text-decoration:none;box-shadow:0 4px 16px rgba(255,45,85,.4);
+  transition:opacity .2s;
+}
+.tt-inter-main-btn:hover{opacity:.85;}
+.tt-inter-skip{
+  color:var(--text2);font-size:.85rem;cursor:pointer;
+  background:none;border:1px solid var(--red-d);border-radius:4px;
+  font-family:Georgia,serif;padding:8px 18px;transition:color .2s;
+}
+.tt-inter-skip:hover{color:var(--pink-l);}
+
 /* ── responsive ── */
 @media(max-width:500px){
   :root{--card-w:52px;--card-h:74px;}
@@ -309,6 +366,13 @@ body{
 </style>
 </head>
 <body>
+
+<!-- ── TIKTOK BANNER ── -->
+<div class="tiktok-banner">
+  <span class="tt-banner-icon">♪</span>
+  <span class="tt-banner-text">Síguenos en TikTok para consejos espirituales gratuitos</span>
+  <a class="tt-banner-btn" href="https://www.tiktok.com/@centroespiritualsaturno" target="_blank" rel="noopener">▶&nbsp;TikTok</a>
+</div>
 
 <!-- ── HEADER ── -->
 <div class="header" id="site-header">
@@ -373,11 +437,28 @@ body{
         style="padding:11px 22px;background:linear-gradient(90deg,var(--purple),var(--pink));color:var(--gold-l);border:none;border-radius:6px;font-family:Georgia,serif;font-size:.95rem;font-weight:bold;cursor:pointer;box-shadow:0 3px 12px rgba(192,64,144,.35);">
         ✦&nbsp;SEGUNDA TIRADA&nbsp;✦
       </button>
-      <button id="btn-nueva" onclick="showPage('pg-welcome');resetAll()"
+      <button id="btn-nueva" onclick="showPage('pg-tiktok')"
         style="display:none;padding:11px 22px;background:linear-gradient(90deg,var(--red),var(--purple));color:#fff;border:none;border-radius:6px;font-family:Georgia,serif;font-size:.95rem;font-weight:bold;cursor:pointer;">
         ↩&nbsp;NUEVA CONSULTA
       </button>
     </div>
+  </div>
+</div>
+
+<!-- ═══════════ PÁGINA 5: TikTok intermedio ═══════════ -->
+<div class="page" id="pg-tiktok">
+  <div class="tt-inter-wrap">
+    <div class="tt-inter-icon">♪</div>
+    <div class="tt-inter-title">¿Quieres hacer otra consulta?</div>
+    <div class="tt-inter-sub">
+      Primero visita nuestro TikTok<br>
+      <strong style="color:var(--gold-l)">@centroespiritualsaturno</strong><br>
+      Consejos espirituales gratuitos cada día ✦
+    </div>
+    <a class="tt-inter-main-btn" href="https://www.tiktok.com/@centroespiritualsaturno" target="_blank" rel="noopener">
+      ♪&nbsp;&nbsp;Ver TikTok Ahora
+    </a>
+    <button class="tt-inter-skip" onclick="goWelcome()">↩ Nueva Consulta</button>
   </div>
 </div>
 
@@ -475,6 +556,8 @@ function showPage(id){
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
 }
+
+function goWelcome(){ showPage('pg-welcome'); resetAll(); }
 
 function resetAll(){
   selOrder=[]; cardStates={}; round=1; roundsCards=[[],[],[]];
