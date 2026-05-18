@@ -328,6 +328,11 @@ body{
       situación o lo que más te preocupa.</strong><br>
       Cuando sientas que estás listo, elige tus cartas.
     </div>
+    <div style="background:var(--green-d);border:1px solid var(--green-l);border-radius:6px;padding:10px 14px;text-align:center;color:var(--green-l);font-size:.88rem;font-weight:bold;line-height:1.6;margin-bottom:14px;">
+      ✦ La consulta consta de <strong>3 tiradas obligatorias</strong> ✦<br>
+      En cada tirada elegirás 7 cartas.<br>
+      Al final se revelan las cartas que más influyen en ti.
+    </div>
     <div class="form-group">
       <label>¿Cuál es tu nombre?</label>
       <input type="text" id="inp-name" placeholder="Tu nombre" autocomplete="off">
@@ -353,7 +358,6 @@ body{
   <p class="cards-hint" id="cards-hint">Deja que tu intuición guíe tu mano — elige 7 cartas</p>
   <div class="card-grid" id="card-grid"></div>
   <div class="cards-bottom">
-    <button class="btn-secondary" onclick="showPage('pg-welcome');resetAll()">↩ Nueva Consulta</button>
     <button id="btn-oracle" onclick="goReading()">✦&nbsp;VER MI LECTURA&nbsp;✦</button>
   </div>
 </div>
