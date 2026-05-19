@@ -517,7 +517,7 @@ const SIG = {
 "3 de Espadas": {main:"Justificación, justicia, buena sentencia, rectitud.",combo:"",rev:"Pérdida, sin esperanza, perfidia."},
 "4 de Espadas": {main:"Sufrimiento duro, celos, malas intenciones, guerra, heridas.",combo:"Con As de Oros: honor por la guerra.",rev:""},
 "5 de Espadas": {main:"Sufrimiento, ideales elevados, tristezas ocultas, afanes y disgustos internos.",combo:"",rev:""},
-"6 de Espadas": {main:"De improviso, al acto, pronto — algo sucederá inesperadamente.",combo:"",rev:""},
+"6 de Espadas": {main:"Sin pensar, de improviso, al acto, pronto, al momento; y algunas veces dolor y disgusto causado por noticias recibidas.",combo:"",rev:""},
 "7 de Espadas": {main:"Porvenir incierto, largos sufrimientos, penas terribles, dolores internos.",combo:"Con As de Oros: glorioso porvenir.",rev:""},
 "8 de Espadas": {main:"Justicia, legalidad, notario, seguridad jurídica, integridad, honradez.",combo:"Con As de Oros: triunfo por la justicia.",rev:""},
 "9 de Espadas": {main:"Seguridad, rectitud, constancia, afecto, persona honesta e íntegra.",combo:"Con As de Oros: pleito ganado.",rev:""},
@@ -778,10 +778,10 @@ function goReading(){
     window.scrollTo(0,0);
 
   } else {
-    // Tercera tirada — mostrar todo + repetidas
+    // Tercera tirada — solo mostrar cartas repetidas
     container.innerHTML='';
 
-    // Contar cuántas tiradas tiene cada carta
+    // Contar repetidas
     const keyCount={};
     roundsCards.forEach(cards=>{
       cards.forEach(([n,s])=>{
@@ -791,23 +791,14 @@ function goReading(){
     });
     const repeats=new Set(Object.keys(keyCount).filter(k=>keyCount[k]>=2));
 
-    // Mostrar las 3 tiradas
-    for(let r=0;r<MAX_ROUNDS;r++){
-      container.appendChild(buildRoundBadge(r));
-      roundsCards[r].forEach(([num,suit],i)=>{
-        container.appendChild(buildReadingItem(num,suit,i+1,repeats.has(`${num} de ${suit}`)));
-      });
-    }
-
-    // Sección cartas que influyen
     if(repeats.size>0){
       const repBadge=document.createElement('div');
-      repBadge.innerHTML=`<div style="background:var(--green);color:#fff;text-align:center;padding:6px;border-radius:20px;font-weight:bold;font-size:.85rem;margin:16px 0 6px">♻ CARTAS QUE INFLUYEN EN TI ♻</div>`;
+      repBadge.innerHTML=`<div style="background:var(--green);color:#fff;text-align:center;padding:8px;border-radius:20px;font-weight:bold;font-size:.9rem;margin:8px 0 10px">♻ CARTAS QUE MÁS INFLUYEN EN TI ♻</div>`;
       container.appendChild(repBadge);
 
       const hint=document.createElement('div');
-      hint.style.cssText='text-align:center;color:var(--green-l);font-style:italic;font-size:.88rem;margin-bottom:10px;line-height:1.6;background:var(--green-d);padding:10px;border-radius:6px;border:1px solid var(--green-l)';
-      hint.textContent='Estas cartas se repitieron en tus tiradas. Son las fuerzas que verdaderamente influyen en ti ahora mismo. Léelas con calma y piensa en su relación con lo que tienes en mente.';
+      hint.style.cssText='text-align:center;color:var(--green-l);font-style:italic;font-size:.88rem;margin-bottom:12px;line-height:1.6;background:var(--green-d);padding:10px;border-radius:6px;border:1px solid var(--green-l)';
+      hint.textContent='Estas cartas se repitieron en tus tres tiradas. Son las fuerzas que verdaderamente influyen en ti ahora mismo. Léelas con calma y piensa en su relación con lo que tienes en mente.';
       container.appendChild(hint);
 
       const shown=new Set();
@@ -825,6 +816,20 @@ function goReading(){
       finalMsg.style.cssText='text-align:center;color:var(--gold-l);font-style:italic;font-size:1rem;padding:18px;font-weight:bold';
       finalMsg.textContent='✦  Cuando estés listo, haz una nueva consulta  ✦';
       container.appendChild(finalMsg);
+
+    } else {
+      // Sin repetidas — mostrar aviso
+      const noRep=document.createElement('div');
+      noRep.style.cssText='text-align:center;padding:30px 16px;color:var(--pink-l);font-style:italic;font-size:.95rem;line-height:1.8';
+      noRep.innerHTML=`<div style="font-size:1.5rem;margin-bottom:10px">✦</div>
+        <strong style="color:var(--gold-l);font-size:1rem">No hubo cartas repetidas en tus tres tiradas.</strong><br>
+        Todas las fuerzas están en movimiento y ninguna domina sobre las demás.<br>
+        Cada tirada trajo energías distintas para ti.`;
+      container.appendChild(noRep);
+      const finalMsg=document.createElement('div');
+      finalMsg.style.cssText='text-align:center;color:var(--gold-l);font-style:italic;font-size:1rem;padding:18px;font-weight:bold';
+      finalMsg.textContent='✦  Cuando estés listo, haz una nueva consulta  ✦';
+      container.appendChild(finalMsg);
     }
 
     btnSig.style.display='none';
@@ -832,7 +837,7 @@ function goReading(){
 
     document.getElementById('reading-header').innerHTML=
       `✦ <strong>${userName}</strong> — Tres Tiradas Completadas — ` +
-      `<span style="color:var(--green-l)">Observa las cartas que se repiten</span>`;
+      `<span style="color:var(--green-l)">Cartas que más influyen en ti</span>`;
 
     showPage('pg-reading');
     window.scrollTo(0,0);
