@@ -455,10 +455,14 @@ body{
       <strong style="color:var(--gold-l)">@centroespiritualsaturno</strong><br>
       Consejos espirituales gratuitos cada día ✦
     </div>
-    <a class="tt-inter-main-btn" href="https://www.tiktok.com/@centroespiritualsaturno" target="_blank" rel="noopener">
+    <a class="tt-inter-main-btn" href="https://www.tiktok.com/@centroespiritualsaturno" target="_blank" rel="noopener" onclick="ttVisited()">
       ♪&nbsp;&nbsp;Ver TikTok Ahora
     </a>
-    <button class="tt-inter-skip" onclick="goWelcome()">↩ Nueva Consulta</button>
+    <button class="tt-inter-skip" id="tt-skip-btn" onclick="goWelcome()"
+      style="opacity:.35;cursor:not-allowed;pointer-events:none">↩ Nueva Consulta</button>
+    <div id="tt-unlock-hint" style="color:var(--text2);font-size:.78rem;font-style:italic;margin-top:8px">
+      Visita el TikTok para continuar
+    </div>
   </div>
 </div>
 
@@ -750,45 +754,41 @@ function buildRoundBadge(r){
 
 function goReading(){
   if(selOrder.length<MAX_CARDS) return;
-  const selected=selOrder.map(i=>deck[i]);
-  roundsCards[round-1]=selected;
 
-  const container=document.getElementById('reading-container');
-  const btnSig=document.getElementById('btn-siguiente');
-  const btnNueva=document.getElementById('btn-nueva');
+  // Copia profunda — independiente del estado futuro del deck
+  const selected = selOrder.map(i=>[ deck[i][0], deck[i][1] ]);
+  roundsCards[round-1] = selected;
+
+  const container = document.getElementById('reading-container');
+  const btnSig    = document.getElementById('btn-siguiente');
+  const btnNueva  = document.getElementById('btn-nueva');
+
+  // Siempre limpiar antes de construir
+  container.innerHTML = '';
 
   if(round < MAX_ROUNDS){
-    // Mostrar sólo la tirada actual (limpiar si es primera)
-    if(round===1) container.innerHTML='';
     container.appendChild(buildRoundBadge(round-1));
     selected.forEach(([num,suit],i)=>{
       container.appendChild(buildReadingItem(num,suit,i+1,false));
     });
 
-    const nextName=ROUND_NAMES[round];
-    btnSig.textContent=`✦ ${nextName} TIRADA ✦`;
-    btnSig.style.display='inline-block';
-    btnNueva.style.display='none';
+    btnSig.textContent = `✦ ${ROUND_NAMES[round]} TIRADA ✦`;
+    btnSig.style.display = 'inline-block';
+    btnNueva.style.display = 'none';
 
-    document.getElementById('reading-header').innerHTML=
-      `✦ <strong>${userName}</strong> — ${ROUND_NAMES[round-1].charAt(0)+ROUND_NAMES[round-1].slice(1).toLowerCase()} Tirada — ` +
+    document.getElementById('reading-header').innerHTML =
+      `✦ <strong>${userName}</strong> — ${ROUND_NAMES[round-1].charAt(0)+ROUND_NAMES[round-1].slice(1).toLowerCase()} Tirada — `+
       `<span style="color:var(--pink-l)">Lee cada carta y su significado</span>`;
 
-    showPage('pg-reading');
-    window.scrollTo(0,0);
-
   } else {
-    // Tercera tirada — solo mostrar cartas repetidas
-    container.innerHTML='';
-
-    // Contar repetidas
+    // Ronda 3 completada — contar repetidas con copia exacta
     const keyCount={};
-    roundsCards.forEach(cards=>{
-      cards.forEach(([n,s])=>{
+    for(let r=0; r<MAX_ROUNDS; r++){
+      for(const [n,s] of roundsCards[r]){
         const k=`${n} de ${s}`;
         keyCount[k]=(keyCount[k]||0)+1;
-      });
-    });
+      }
+    }
     const repeats=new Set(Object.keys(keyCount).filter(k=>keyCount[k]>=2));
 
     if(repeats.size>0){
@@ -802,23 +802,22 @@ function goReading(){
       container.appendChild(hint);
 
       const shown=new Set();
-      roundsCards.forEach(cards=>{
-        cards.forEach(([num,suit])=>{
+      for(let r=0; r<MAX_ROUNDS; r++){
+        for(const [num,suit] of roundsCards[r]){
           const k=`${num} de ${suit}`;
           if(repeats.has(k)&&!shown.has(k)){
             shown.add(k);
             container.appendChild(buildReadingItem(num,suit,0,true));
           }
-        });
-      });
+        }
+      }
 
       const finalMsg=document.createElement('div');
       finalMsg.style.cssText='text-align:center;color:var(--gold-l);font-style:italic;font-size:1rem;padding:18px;font-weight:bold';
-      finalMsg.textContent='✦  Cuando estés listo, haz una nueva consulta  ✦';
+      finalMsg.textContent='✦  Cuando estés listo, visita nuestro TikTok  ✦';
       container.appendChild(finalMsg);
 
     } else {
-      // Sin repetidas — mostrar aviso
       const noRep=document.createElement('div');
       noRep.style.cssText='text-align:center;padding:30px 16px;color:var(--pink-l);font-style:italic;font-size:.95rem;line-height:1.8';
       noRep.innerHTML=`<div style="font-size:1.5rem;margin-bottom:10px">✦</div>
@@ -828,7 +827,7 @@ function goReading(){
       container.appendChild(noRep);
       const finalMsg=document.createElement('div');
       finalMsg.style.cssText='text-align:center;color:var(--gold-l);font-style:italic;font-size:1rem;padding:18px;font-weight:bold';
-      finalMsg.textContent='✦  Cuando estés listo, haz una nueva consulta  ✦';
+      finalMsg.textContent='✦  Visita nuestro TikTok para seguir  ✦';
       container.appendChild(finalMsg);
     }
 
@@ -836,11 +835,21 @@ function goReading(){
     btnNueva.style.display='inline-block';
 
     document.getElementById('reading-header').innerHTML=
-      `✦ <strong>${userName}</strong> — Tres Tiradas Completadas — ` +
+      `✦ <strong>${userName}</strong> — Tres Tiradas Completadas — `+
       `<span style="color:var(--green-l)">Cartas que más influyen en ti</span>`;
+  }
 
-    showPage('pg-reading');
-    window.scrollTo(0,0);
+  showPage('pg-reading');
+  window.scrollTo(0,0);
+}
+
+function ttVisited(){
+  const btn=document.getElementById('tt-skip-btn');
+  if(btn){
+    btn.style.opacity='1';
+    btn.style.cursor='pointer';
+    btn.style.pointerEvents='auto';
+    document.getElementById('tt-unlock-hint').style.display='none';
   }
 }
 
