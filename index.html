@@ -569,6 +569,14 @@ function resetAll(){
   document.getElementById('btn-oracle').classList.remove('ready');
   document.getElementById('info-count').textContent='Cartas elegidas: 0/7';
   document.getElementById('cards-hint').textContent='Deja que tu intuición guíe tu mano — elige 7 cartas';
+  // Restaurar botones de lectura a estado inicial
+  document.getElementById('btn-siguiente').style.display='inline-block';
+  document.getElementById('btn-nueva').style.display='none';
+  // Volver a bloquear el botón de TikTok para la siguiente consulta
+  const ttBtn=document.getElementById('tt-skip-btn');
+  if(ttBtn){ ttBtn.style.opacity='.35'; ttBtn.style.cursor='not-allowed'; ttBtn.style.pointerEvents='none'; }
+  const ttHint=document.getElementById('tt-unlock-hint');
+  if(ttHint) ttHint.style.display='';
 }
 
 // ── Inicio ────────────────────────────────────────────────────────────────────
