@@ -544,7 +544,7 @@ const SIG = {
 
 // ── Estado ────────────────────────────────────────────────────────────────────
 const MAX_ROUNDS = 3;
-let userName="", deck=[], selOrder=[], cardStates={};
+let userName="", deck=[], selOrder=[], selCards=[], cardStates={};
 let round=1, roundsCards=[[],[],[]];
 
 function shuffle(arr){
@@ -564,7 +564,7 @@ function showPage(id){
 function goWelcome(){ showPage('pg-welcome'); resetAll(); }
 
 function resetAll(){
-  selOrder=[]; cardStates={}; round=1; roundsCards=[[],[],[]];
+  selOrder=[]; selCards=[]; cardStates={}; round=1; roundsCards=[[],[],[]];
   document.getElementById('inp-name').value='';
   document.getElementById('btn-oracle').classList.remove('ready');
   document.getElementById('info-count').textContent='Cartas elegidas: 0/7';
@@ -641,7 +641,7 @@ function runTransition(){
 
 // ── Construcción del mazo ────────────────────────────────────────────────────
 function buildCards(){
-  selOrder=[]; cardStates={};
+  selOrder=[]; selCards=[]; cardStates={};
   document.getElementById('btn-oracle').classList.remove('ready');
   document.getElementById('info-count').textContent='Cartas elegidas: 0/7';
   document.getElementById('info-name').textContent=`✦  ${userName}`;
@@ -656,19 +656,22 @@ function buildCards(){
   deck.forEach(([num,suit],idx)=>{
     cardStates[idx]='down';
     const slot=document.createElement('div');
-    slot.className='card-slot'; slot.dataset.idx=idx;
+    slot.className='card-slot';
+    slot.dataset.idx=idx;
+    slot.dataset.num=num;
+    slot.dataset.suit=suit;
     const inner=document.createElement('div'); inner.className='card-inner';
     const back=document.createElement('div'); back.className='card-back';
     back.innerHTML=pentaSVG();
     const face=document.createElement('div'); face.className='card-face';
     const img=document.createElement('img');
-    img.src=cardPath(num,suit); img.alt=`${num} de ${suit}`; img.loading='lazy';
+    img.src=cardPath(num,suit); img.alt=`${num} de ${suit}`;
     face.appendChild(img);
     const numBadge=document.createElement('div'); numBadge.className='card-num';
     numBadge.style.display='none';
     inner.appendChild(back); inner.appendChild(face);
     slot.appendChild(inner); slot.appendChild(numBadge);
-    slot.addEventListener('click',()=>flipCard(idx));
+    slot.addEventListener('click',()=>flipCard(idx, num, suit));
     grid.appendChild(slot);
   });
 }
@@ -688,11 +691,13 @@ function pentaSVG(){
   </svg>`;
 }
 
-function flipCard(idx){
+function flipCard(idx, num, suit){
   if(cardStates[idx]==='up') return;
-  if(selOrder.length>=MAX_CARDS) return;
-  cardStates[idx]='up'; selOrder.push(idx);
-  const orderN=selOrder.length;
+  if(selCards.length>=MAX_CARDS) return;
+  cardStates[idx]='up';
+  selOrder.push(idx);
+  selCards.push([num, suit]); // guardar carta exacta en el momento del click
+  const orderN=selCards.length;
   const slot=document.querySelector(`.card-slot[data-idx="${idx}"]`);
   slot.classList.add('flipped');
   setTimeout(()=>{
@@ -753,10 +758,10 @@ function buildRoundBadge(r){
 }
 
 function goReading(){
-  if(selOrder.length<MAX_CARDS) return;
+  if(selCards.length<MAX_CARDS) return;
 
-  // Copia profunda — independiente del estado futuro del deck
-  const selected = selOrder.map(i=>[ deck[i][0], deck[i][1] ]);
+  // Usar selCards: datos guardados en el momento exacto de cada click
+  const selected = selCards.map(([n,s])=>[n,s]);
   roundsCards[round-1] = selected;
 
   const container = document.getElementById('reading-container');
