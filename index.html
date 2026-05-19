@@ -831,13 +831,49 @@ function goReading(){
       container.appendChild(finalMsg);
 
     } else {
-      const noRep=document.createElement('div');
-      noRep.style.cssText='text-align:center;padding:30px 16px;color:var(--pink-l);font-style:italic;font-size:.95rem;line-height:1.8';
-      noRep.innerHTML=`<div style="font-size:1.5rem;margin-bottom:10px">✦</div>
-        <strong style="color:var(--gold-l);font-size:1rem">No hubo cartas repetidas en tus tres tiradas.</strong><br>
-        Todas las fuerzas están en movimiento y ninguna domina sobre las demás.<br>
-        Cada tirada trajo energías distintas para ti.`;
-      container.appendChild(noRep);
+      // Sin repetidas: contar cartas por palo en las 3 tiradas
+      const suitCount={Oros:0,Copas:0,Espadas:0,Bastos:0};
+      for(let r=0;r<MAX_ROUNDS;r++)
+        for(const [n,s] of roundsCards[r])
+          if(suitCount.hasOwnProperty(s)) suitCount[s]++;
+
+      const maxCount=Math.max(...Object.values(suitCount));
+      const winner=Object.keys(suitCount).find(k=>suitCount[k]===maxCount);
+
+      const SUIT_INFO={
+        Oros:{color:'var(--gold)',icon:'✦',
+          msg:'El consultante está pensando en lo económico y el dinero. Sus energías están enfocadas en asuntos materiales, finanzas y abundancia.'},
+        Copas:{color:'var(--red-l)',icon:'♥',
+          msg:'El consultante está pensando en cuestiones familiares, amores y tristezas. Sus energías giran en torno a las relaciones y las emociones del corazón.'},
+        Espadas:{color:'var(--purp-l)',icon:'✦',
+          msg:'El consultante está pensando en dolor, sufrimiento, enfermedades o traiciones. Hay una carga emocional fuerte que pesa en su mente y corazón.'},
+        Bastos:{color:'var(--green-l)',icon:'✦',
+          msg:'El consultante está pensando en espiritualidad. La situación está viva, moviéndose y cambiando, no está estancada. Algo viene en camino o se manifiesta.'}
+      };
+      const w=SUIT_INFO[winner];
+      const SUIT_COLORS={Oros:'var(--gold)',Copas:'var(--red-l)',Espadas:'var(--purp-l)',Bastos:'var(--green-l)'};
+
+      const badge=document.createElement('div');
+      badge.innerHTML=`<div style="background:${w.color};color:#0a0214;text-align:center;padding:8px;border-radius:20px;font-weight:bold;font-size:.9rem;margin:8px 0 10px">✦ ANÁLISIS DE PALOS — LAS FUERZAS QUE TE RODEAN ✦</div>`;
+      container.appendChild(badge);
+
+      const countsDiv=document.createElement('div');
+      countsDiv.style.cssText='display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:14px';
+      for(const suit of ['Oros','Copas','Espadas','Bastos']){
+        const isW=suit===winner;
+        const c=SUIT_COLORS[suit];
+        const chip=document.createElement('div');
+        chip.style.cssText=`background:${isW?c:'var(--bg)'};color:${isW?'#0a0214':c};border:2px solid ${c};border-radius:12px;padding:8px 16px;font-weight:bold;font-size:.86rem;text-align:center;${isW?'transform:scale(1.1);box-shadow:0 0 12px '+c+';':''}`;
+        chip.innerHTML=`${suit.toUpperCase()}<br><span style="font-size:1.4rem">${suitCount[suit]}</span>`;
+        countsDiv.appendChild(chip);
+      }
+      container.appendChild(countsDiv);
+
+      const msgDiv=document.createElement('div');
+      msgDiv.style.cssText=`border:1px solid ${w.color};border-radius:8px;padding:16px 18px;margin:4px 0 10px;text-align:center;background:rgba(0,0,0,.35)`;
+      msgDiv.innerHTML=`<div style="color:${w.color};font-weight:bold;font-size:1rem;margin-bottom:10px">PREDOMINAN LOS ${winner.toUpperCase()}</div><div style="color:var(--gold-l);font-style:italic;font-size:.94rem;line-height:1.75">${w.msg}</div>`;
+      container.appendChild(msgDiv);
+
       const finalMsg=document.createElement('div');
       finalMsg.style.cssText='text-align:center;color:var(--gold-l);font-style:italic;font-size:1rem;padding:18px;font-weight:bold';
       finalMsg.textContent='✦  Visita nuestro TikTok para seguir  ✦';
