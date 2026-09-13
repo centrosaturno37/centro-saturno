@@ -372,6 +372,22 @@ body{
   :root{--card-w:46px;--card-h:66px;}
   .card-grid{grid-template-columns:repeat(6,var(--card-w));gap:2px;}
 }
+
+/* ── pantallas de PC/laptop: las 48 cartas en 12 columnas x 4 filas, sin scroll ── */
+@media(min-width:900px){
+  :root{
+    --card-h:clamp(56px,9.5vh,88px);
+    --card-w:calc(var(--card-h) * 0.7143);
+  }
+  #pg-cards{padding:4px 10px;}
+  .info-bar{padding:4px 10px;margin-bottom:4px;}
+  .cards-hint{margin-bottom:4px;}
+  .card-grid{
+    grid-template-columns:repeat(12,var(--card-w));
+    gap:clamp(3px,0.6vh,6px);
+  }
+  .cards-bottom{margin-top:4px;}
+}
 </style>
 </head>
 <body>
