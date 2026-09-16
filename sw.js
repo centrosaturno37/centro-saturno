@@ -3,7 +3,7 @@
 // Si hay copia en cache, la app abre al instante con esa copia, y en
 // paralelo se descarga la version nueva para la proxima vez que se abra.
 // Si no hay copia (primera visita), espera la red como una web normal.
-const CACHE_NAME = 'centro-saturno-v2';
+const CACHE_NAME = 'centro-saturno-v3';
 const CORE_ASSETS = [
   './',
   './index.html',

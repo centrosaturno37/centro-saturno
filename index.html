@@ -507,7 +507,7 @@ const SUIT_DIR = {"Oros":"oros","Copas":"copas","Espadas":"espadas","Bastos":"ba
 function cardPath(num, suit){
   const folder = SUIT_DIR[suit];
   const fname  = (suit==="Copas" && num==="9") ? "9" : NUM_FNAME[num];
-  return `cartas/${folder}/${fname} de ${folder}.png`;
+  return `cartas/${folder}/${fname} de ${folder}.jpg`;
 }
 
 const INVOCACIONES = [
