@@ -1149,8 +1149,15 @@ document.getElementById('inp-name').addEventListener('keydown',e=>{
 
 // PWA: registra el service worker para poder instalar la app y usarla offline
 if('serviceWorker' in navigator){
+  // Si llega una versión nueva de la app, recargar una sola vez para mostrarla
+  // (sin esto, la primera apertura tras una actualización muestra la copia vieja).
+  const habiaVersionAnterior = !!navigator.serviceWorker.controller;
+  let recargada = false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    if(habiaVersionAnterior && !recargada){ recargada = true; location.reload(); }
+  });
   window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
+    navigator.serviceWorker.register('sw.js').then(r=>r.update()).catch(()=>{});
   });
 }
 </script>
