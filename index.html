@@ -274,6 +274,26 @@ body{
   line-height:1.5;
 }
 
+/* Predicción de las cartas repetidas (mismo diseño que "Tus cartas de hoy" de la web) */
+.ia-seccion{margin:18px 0 6px;display:flex;flex-direction:column;align-items:center;gap:14px;}
+.ia-estado{color:var(--gold-l);font-style:italic;text-align:center;font-size:.98rem;line-height:1.6;}
+.ia-bloque{width:100%;box-sizing:border-box;text-align:center;padding:18px 20px;border-radius:16px;
+  background:linear-gradient(135deg,#150f22,#130d20);border:1px solid rgba(232,194,92,.45);
+  box-shadow:0 0 18px -6px rgba(232,194,92,.35);}
+.ia-titulo{color:#e8c25c;font-weight:bold;letter-spacing:2px;font-size:.84rem;}
+.ia-texto{color:#d9cdb0;font-size:1.02rem;line-height:1.7;margin-top:10px;}
+.ia-botones{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;}
+.ia-btn-voz{font-family:Georgia,serif;font-weight:bold;letter-spacing:.5px;font-size:.92rem;color:#000;
+  padding:11px 24px;border-radius:999px;cursor:pointer;border:3px solid transparent;
+  background:linear-gradient(to bottom,#dcc278,#c4a352) padding-box,
+             linear-gradient(90deg,#a3192b,#a3192b 48%,#1f8a4c 52%,#1f8a4c) border-box;
+  box-shadow:0 0 18px -6px rgba(201,168,76,.6);transition:box-shadow .3s,filter .3s;}
+.ia-btn-voz:hover{filter:brightness(1.05);box-shadow:0 0 30px 0 rgba(122,15,31,.9);}
+.ia-btn-voz:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;}
+.ia-btn-secundario{font-family:Georgia,serif;font-size:.92rem;color:#e8c25c;background:transparent;
+  border:1px solid rgba(232,194,92,.6);border-radius:999px;padding:11px 24px;cursor:pointer;}
+.ia-btn-secundario:disabled{opacity:.4;cursor:not-allowed;}
+
 /* Round badge */
 .round-badge{
   text-align:center;margin-bottom:10px;
@@ -590,6 +610,7 @@ function goWelcome(){ showPage('pg-welcome'); resetAll(); }
 
 function resetAll(){
   selOrder=[]; selCards=[]; cardStates={}; round=1; roundsCards=[[],[],[]];
+  reiniciarPrediccion();
   document.getElementById('inp-name').value='';
   document.getElementById('btn-oracle').classList.remove('ready');
   document.getElementById('info-count').textContent='Cartas elegidas: 0/7';
@@ -840,15 +861,19 @@ function goReading(){
       container.appendChild(hint);
 
       const shown=new Set();
+      const repetidasEnOrden=[]; // mismo orden en que se muestran en pantalla
       for(let r=0; r<MAX_ROUNDS; r++){
         for(const [num,suit] of roundsCards[r]){
           const k=`${num} de ${suit}`;
           if(repeats.has(k)&&!shown.has(k)){
             shown.add(k);
+            repetidasEnOrden.push(k);
             container.appendChild(buildReadingItem(num,suit,0,true));
           }
         }
       }
+
+      container.appendChild(crearSeccionPrediccion(repetidasEnOrden));
 
       const finalMsg=document.createElement('div');
       finalMsg.style.cssText='text-align:center;color:var(--gold-l);font-style:italic;font-size:1rem;padding:18px;font-weight:bold';
@@ -856,6 +881,13 @@ function goReading(){
       container.appendChild(finalMsg);
 
     } else {
+      // Sin repetidas: no se genera predicción (no se llama a la API).
+      const sinRepetidas=document.createElement('div');
+      sinRepetidas.className='ia-estado';
+      sinRepetidas.style.margin='6px 0 14px';
+      sinRepetidas.textContent='No hubo cartas repetidas en tus tres tiradas, por eso no se genera una predicción de cartas repetidas.';
+      container.appendChild(sinRepetidas);
+
       // Sin repetidas: contar cartas por palo en las 3 tiradas
       const suitCount={Oros:0,Copas:0,Espadas:0,Bastos:0};
       for(let r=0;r<MAX_ROUNDS;r++)
@@ -916,6 +948,145 @@ function goReading(){
   showPage('pg-reading');
   window.scrollTo(0,0);
 }
+
+// ── Predicción de las cartas repetidas (OpenAI, a través del servidor de la web) ──
+// La clave de OpenAI está solo en el servidor; aquí únicamente se envían los
+// identificadores de las cartas repetidas, en el orden en que se muestran.
+const API_LECTURA = (location.hostname==='localhost' || /^\d+\.\d+\.\d+\.\d+$/.test(location.hostname))
+  ? `${location.protocol}//${location.hostname}:3000/api/interpretar-cartas`   // vista previa local
+  : 'https://centrosaturno.vercel.app/api/interpretar-cartas';
+const IA_TITULO_NORMAL = 'PREDICCIÓN CON SIGNIFICADOS DE CARTAS NORMALES';
+const IA_TITULO_REVES  = 'PREDICCIÓN CON SIGNIFICADOS DE CARTAS AL REVÉS';
+const IA_ERROR = 'No fue posible generar la interpretación en este momento. Intente nuevamente.';
+
+// Una sola solicitud por consulta: el resultado se guarda y se reutiliza.
+let iaLectura = null; // {clave, estado:'cargando'|'listo'|'error', predicciones, mensaje, reintentable}
+let iaSeccion = null;
+
+function idDeCarta(nombre){ return nombre.toLowerCase().replace(/ /g,'-'); }
+
+function idDispositivo(){
+  try{
+    let id = localStorage.getItem('cs_dispositivo');
+    if(!id || !/^[0-9a-f-]{36}$/.test(id)){
+      // randomUUID solo existe en https; getRandomValues funciona en cualquier página.
+      id = crypto.randomUUID ? crypto.randomUUID()
+        : '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+      if(id) localStorage.setItem('cs_dispositivo', id);
+    }
+    return id || undefined;
+  }catch(e){ return undefined; }
+}
+
+function reiniciarPrediccion(){
+  iaLectura = null; iaSeccion = null;
+  try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+}
+
+function crearSeccionPrediccion(nombres){
+  iaSeccion = document.createElement('div');
+  iaSeccion.className = 'ia-seccion';
+  const clave = nombres.join('|');
+  if(!iaLectura || iaLectura.clave !== clave) solicitarPrediccion(nombres, clave);
+  else pintarPrediccion();
+  return iaSeccion;
+}
+
+async function solicitarPrediccion(nombres, clave){
+  if(iaLectura && iaLectura.clave === clave && iaLectura.estado === 'cargando') return; // sin solicitudes duplicadas
+  iaLectura = {clave, estado:'cargando'};
+  pintarPrediccion();
+  const control = new AbortController();
+  const limite = setTimeout(()=>control.abort(), 90000);
+  try{
+    const r = await fetch(API_LECTURA, {
+      method:'POST', credentials:'omit', signal:control.signal,
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ids: nombres.map(idDeCarta), dispositivo: idDispositivo()})
+    });
+    const datos = await r.json().catch(()=>null);
+    if(!iaLectura || iaLectura.clave !== clave) return; // la consulta ya cambió
+    if(r.status === 429){
+      iaLectura = {clave, estado:'error', mensaje:(datos && typeof datos.error==='string') ? datos.error : IA_ERROR, reintentable:false};
+    }else if(r.ok && datos && typeof datos.prediccion_derecha==='string' && datos.prediccion_derecha.trim()
+             && typeof datos.prediccion_invertida==='string' && datos.prediccion_invertida.trim()){
+      iaLectura = {clave, estado:'listo', predicciones:datos};
+    }else{
+      iaLectura = {clave, estado:'error', mensaje:IA_ERROR, reintentable:true};
+    }
+  }catch(e){
+    if(iaLectura && iaLectura.clave === clave) iaLectura = {clave, estado:'error', mensaje:IA_ERROR, reintentable:true};
+  }finally{
+    clearTimeout(limite);
+  }
+  pintarPrediccion();
+}
+
+function pintarPrediccion(){
+  if(!iaSeccion || !iaLectura) return;
+  const s = iaSeccion; s.innerHTML = '';
+  const estado = document.createElement('div'); estado.className = 'ia-estado';
+  if(iaLectura.estado === 'cargando'){
+    estado.textContent = 'Interpretando las cartas que más influyen en ti…';
+    s.appendChild(estado);
+  }else if(iaLectura.estado === 'error'){
+    estado.textContent = iaLectura.mensaje;
+    s.appendChild(estado);
+    if(iaLectura.reintentable){
+      const b = document.createElement('button'); b.className = 'ia-btn-secundario'; b.type = 'button';
+      b.textContent = 'INTENTAR NUEVAMENTE';
+      b.onclick = ()=>{ b.disabled = true; solicitarPrediccion(iaLectura.clave.split('|'), iaLectura.clave); };
+      s.appendChild(b);
+    }
+  }else{
+    for(const [titulo, texto] of [[IA_TITULO_NORMAL, iaLectura.predicciones.prediccion_derecha],[IA_TITULO_REVES, iaLectura.predicciones.prediccion_invertida]]){
+      const bloque = document.createElement('div'); bloque.className = 'ia-bloque';
+      const t = document.createElement('div'); t.className = 'ia-titulo'; t.textContent = titulo;
+      const p = document.createElement('div'); p.className = 'ia-texto'; p.textContent = texto;
+      bloque.appendChild(t); bloque.appendChild(p); s.appendChild(bloque);
+    }
+  }
+  if('speechSynthesis' in window){
+    const botones = document.createElement('div'); botones.className = 'ia-botones';
+    const voz = document.createElement('button'); voz.className = 'ia-btn-voz'; voz.type = 'button';
+    voz.textContent = '🔊 ESCUCHAR MI PREDICCIÓN';
+    voz.disabled = iaLectura.estado !== 'listo';
+    voz.onclick = escucharPrediccion;
+    const parar = document.createElement('button'); parar.className = 'ia-btn-secundario'; parar.type = 'button';
+    parar.textContent = '⏹ DETENER';
+    parar.onclick = ()=>speechSynthesis.cancel();
+    botones.appendChild(voz); botones.appendChild(parar); s.appendChild(botones);
+  }
+}
+
+// ── Voz: la misma solución que funciona en iPhone en la web ──
+const VOZ_PREFERENCIA = ['es-GT','es-MX','es-US','es-ES'];
+const VOZ_MASCULINA = /\b(juan|jorge|diego|carlos|ra[uú]l|pablo|[aá]lvaro|andr[eé]s|enrique|gonzalo|alonso|eddy|reed|rocko|grandpa|male|hombre|masculin)/i;
+function elegirVoz(voces){
+  const norm = l=>l.replace('_','-').toLowerCase();
+  const es = voces.filter(v=>norm(v.lang).startsWith('es'));
+  const porPais = lista=>{ for(const p of VOZ_PREFERENCIA){ const v=lista.find(x=>norm(x.lang)===p.toLowerCase()); if(v) return v; } return lista[0]||null; };
+  return porPais(es.filter(v=>VOZ_MASCULINA.test(v.name))) || porPais(es);
+}
+function enOraciones(t){ return t.split(/(?<=[.;:!?])\s+/).map(x=>x.trim()).filter(Boolean); }
+function escucharPrediccion(){
+  if(!iaLectura || iaLectura.estado !== 'listo') return;
+  const sintesis = window.speechSynthesis;
+  // En iPhone, cancel() seguido de inmediato por speak() descarta la lectura: solo se cancela si algo suena.
+  if(sintesis.speaking || sintesis.pending) sintesis.cancel();
+  const voz = elegirVoz(sintesis.getVoices());
+  const textos = ['Predicción con significados de cartas normales.', ...enOraciones(iaLectura.predicciones.prediccion_derecha),
+                  'Predicción con significados de cartas al revés.', ...enOraciones(iaLectura.predicciones.prediccion_invertida)];
+  for(const texto of textos){
+    const u = new SpeechSynthesisUtterance(texto);
+    if(voz) u.voice = voz;
+    u.lang = voz ? voz.lang : 'es-MX';
+    u.rate = 0.8; u.pitch = 0.9;
+    sintesis.speak(u);
+  }
+  sintesis.resume();
+}
+if('speechSynthesis' in window){ try{ speechSynthesis.getVoices(); }catch(e){} }
 
 function ttVisited(){
   const btn=document.getElementById('tt-skip-btn');
