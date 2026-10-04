@@ -601,6 +601,7 @@ function shuffle(arr){
 
 // ── Páginas ───────────────────────────────────────────────────────────────────
 function showPage(id){
+  if(id!=='pg-reading' && window.VozCentroSaturno) VozCentroSaturno.detener();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
@@ -952,9 +953,20 @@ function goReading(){
 // ── Predicción de las cartas repetidas (OpenAI, a través del servidor de la web) ──
 // La clave de OpenAI está solo en el servidor; aquí únicamente se envían los
 // identificadores de las cartas repetidas, en el orden en que se muestran.
-const API_LECTURA = (location.hostname==='localhost' || /^\d+\.\d+\.\d+\.\d+$/.test(location.hostname))
-  ? `${location.protocol}//${location.hostname}:3000/api/interpretar-cartas`   // vista previa local
-  : 'https://centrosaturno.vercel.app/api/interpretar-cartas';
+const BASE_WEB = (location.hostname==='localhost' || /^\d+\.\d+\.\d+\.\d+$/.test(location.hostname))
+  ? `${location.protocol}//${location.hostname}:3000`   // vista previa local
+  : 'https://centrosaturno.vercel.app';
+const API_LECTURA = `${BASE_WEB}/api/interpretar-cartas`;
+// Motor de voz único, compartido con la web (public/voz-centro-saturno.js).
+(function(){
+  const sc = document.createElement('script');
+  sc.src = `${BASE_WEB}/voz-centro-saturno.js`;
+  sc.onload = ()=>pintarPrediccion();
+  document.head.appendChild(sc);
+})();
+let iaVozEstado = 'inactivo'; // 'inactivo' | 'hablando' | 'error'
+let iaVozRespaldo = false;     // true si se usa la voz del navegador (sin audio del servidor)
+let iaBotonVoz = null;
 const IA_TITULO_NORMAL = 'PREDICCIÓN CON SIGNIFICADOS DE CARTAS NORMALES';
 const IA_TITULO_REVES  = 'PREDICCIÓN CON SIGNIFICADOS DE CARTAS AL REVÉS';
 const IA_ERROR = 'No fue posible generar la interpretación en este momento. Intente nuevamente.';
@@ -980,7 +992,8 @@ function idDispositivo(){
 
 function reiniciarPrediccion(){
   iaLectura = null; iaSeccion = null;
-  try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+  if(window.VozCentroSaturno) VozCentroSaturno.detener();
+  iaVozEstado = 'inactivo';
 }
 
 function crearSeccionPrediccion(nombres){
@@ -1046,47 +1059,54 @@ function pintarPrediccion(){
       bloque.appendChild(t); bloque.appendChild(p); s.appendChild(bloque);
     }
   }
-  if('speechSynthesis' in window){
+  if(window.VozCentroSaturno && VozCentroSaturno.disponible){
     const botones = document.createElement('div'); botones.className = 'ia-botones';
     const voz = document.createElement('button'); voz.className = 'ia-btn-voz'; voz.type = 'button';
-    voz.textContent = '🔊 ESCUCHAR MI PREDICCIÓN';
     voz.disabled = iaLectura.estado !== 'listo';
     voz.onclick = escucharPrediccion;
+    iaBotonVoz = voz;
     const parar = document.createElement('button'); parar.className = 'ia-btn-secundario'; parar.type = 'button';
     parar.textContent = '⏹ DETENER';
-    parar.onclick = ()=>speechSynthesis.cancel();
+    parar.onclick = ()=>VozCentroSaturno.detener();
     botones.appendChild(voz); botones.appendChild(parar); s.appendChild(botones);
+    const aviso = document.createElement('div'); aviso.className = 'ia-estado'; aviso.style.fontSize = '.86rem';
+    aviso.id = 'ia-aviso-voz'; s.appendChild(aviso);
+    actualizarBotonVoz();
+    // En cuanto hay predicción, descargar su audio en segundo plano para que al tocar suene al instante.
+    const origen = origenAudio();
+    if(origen && VozCentroSaturno.prepararAudio) VozCentroSaturno.prepararAudio(origen);
   }
 }
 
-// ── Voz: la misma solución que funciona en iPhone en la web ──
-const VOZ_PREFERENCIA = ['es-GT','es-MX','es-US','es-ES'];
-const VOZ_MASCULINA = /\b(juan|jorge|diego|carlos|ra[uú]l|pablo|[aá]lvaro|andr[eé]s|enrique|gonzalo|alonso|eddy|reed|rocko|grandpa|male|hombre|masculin)/i;
-function elegirVoz(voces){
-  const norm = l=>l.replace('_','-').toLowerCase();
-  const es = voces.filter(v=>norm(v.lang).startsWith('es'));
-  const porPais = lista=>{ for(const p of VOZ_PREFERENCIA){ const v=lista.find(x=>norm(x.lang)===p.toLowerCase()); if(v) return v; } return lista[0]||null; };
-  return porPais(es.filter(v=>VOZ_MASCULINA.test(v.name))) || porPais(es);
+// ── Voz: motor compartido con la web (VozCentroSaturno) ──
+function actualizarBotonVoz(){
+  if(iaBotonVoz) iaBotonVoz.textContent = iaVozEstado==='hablando' ? '🔊 LEYENDO… TOCA PARA DETENER'
+    : iaVozEstado==='preparando' ? '⏳ PREPARANDO LA VOZ…' : '🔊 ESCUCHAR MI PREDICCIÓN';
+  const aviso = document.getElementById('ia-aviso-voz');
+  if(aviso) aviso.textContent = iaVozEstado==='error' ? 'No se pudo reproducir la voz. Toca el botón para intentarlo de nuevo.'
+    : (iaVozRespaldo && iaVozEstado==='hablando') ? 'Si usas iPhone y no escuchas la voz, quita el modo silencio.' : '';
 }
-function enOraciones(t){ return t.split(/(?<=[.;:!?])\s+/).map(x=>x.trim()).filter(Boolean); }
+// Audio de la predicción en el servidor (suena aunque el iPhone esté en silencio).
+function origenAudio(){
+  const p = iaLectura && iaLectura.predicciones;
+  if(!p || !p.voz_token) return null;
+  return { url: `${BASE_WEB}/api/voz-prediccion`,
+           cuerpo: {seccion:'repetidas', prediccion_derecha:p.prediccion_derecha, prediccion_invertida:p.prediccion_invertida, token:p.voz_token} };
+}
+// Primer toque: leer; segundo toque: detener. Se llama directamente desde el toque.
 function escucharPrediccion(){
-  if(!iaLectura || iaLectura.estado !== 'listo') return;
-  const sintesis = window.speechSynthesis;
-  // En iPhone, cancel() seguido de inmediato por speak() descarta la lectura: solo se cancela si algo suena.
-  if(sintesis.speaking || sintesis.pending) sintesis.cancel();
-  const voz = elegirVoz(sintesis.getVoices());
-  const textos = ['Predicción con significados de cartas normales.', ...enOraciones(iaLectura.predicciones.prediccion_derecha),
-                  'Predicción con significados de cartas al revés.', ...enOraciones(iaLectura.predicciones.prediccion_invertida)];
-  for(const texto of textos){
-    const u = new SpeechSynthesisUtterance(texto);
-    if(voz) u.voice = voz;
-    u.lang = voz ? voz.lang : 'es-MX';
-    u.rate = 0.8; u.pitch = 0.9;
-    sintesis.speak(u);
+  if(!iaLectura || iaLectura.estado !== 'listo' || !window.VozCentroSaturno) return;
+  const p = iaLectura.predicciones;
+  const partes = ['Predicción con significados de cartas normales.', p.prediccion_derecha,
+                  'Predicción con significados de cartas al revés.', p.prediccion_invertida];
+  const alCambiar = (estado, info)=>{ iaVozEstado = estado; iaVozRespaldo = !!(info && info.respaldo); actualizarBotonVoz(); };
+  const origen = origenAudio();
+  if(origen && VozCentroSaturno.alternarAudio){
+    VozCentroSaturno.alternarAudio('repetidas', origen, partes, alCambiar);
+  }else{
+    VozCentroSaturno.alternar('repetidas', partes, alCambiar);
   }
-  sintesis.resume();
 }
-if('speechSynthesis' in window){ try{ speechSynthesis.getVoices(); }catch(e){} }
 
 function ttVisited(){
   const btn=document.getElementById('tt-skip-btn');
