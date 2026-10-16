@@ -170,10 +170,12 @@ body{
   border:1.5px solid var(--red-d);
 }
 .card-back{
-  background:linear-gradient(160deg,#1a0030,#0a1008);
-  display:flex;align-items:center;justify-content:center;
+  /* Mismo reverso que la Lectura Privada: logotipo de Centro Saturno */
+  background:linear-gradient(135deg,#150f22,#130d20);
+  border-color:rgba(196,164,100,.3);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
 }
-.card-back svg{width:60%;height:60%;}
+.card-back img{width:80%;height:auto;opacity:.7;pointer-events:none;user-select:none;-webkit-user-drag:none;}
 .card-face{transform:rotateY(180deg);overflow:hidden;}
 .card-face img{width:100%;height:100%;object-fit:cover;border-radius:4px;}
 .card-num{
@@ -184,7 +186,7 @@ body{
   display:flex;align-items:center;justify-content:center;
   border:1px solid var(--red-l);z-index:10;
 }
-.card-slot:not(.flipped):not(.done):hover .card-back{border-color:var(--pink-l);}
+.card-slot:not(.flipped):not(.done):hover .card-back{border-color:rgba(196,164,100,.7);}
 .cards-bottom{
   display:flex;justify-content:space-between;
   align-items:center;margin-top:8px;flex-wrap:wrap;gap:6px;
@@ -717,7 +719,7 @@ function buildCards(){
     slot.dataset.suit=suit;
     const inner=document.createElement('div'); inner.className='card-inner';
     const back=document.createElement('div'); back.className='card-back';
-    back.innerHTML=pentaSVG();
+    back.innerHTML='<img src="logo-centro-saturno.png" alt="" draggable="false">';
     const face=document.createElement('div'); face.className='card-face';
     const img=document.createElement('img');
     img.src=cardPath(num,suit); img.alt=`${num} de ${suit}`;
