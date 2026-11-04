@@ -166,17 +166,21 @@ body{
 .card-slot.flipped .card-inner{transform:rotateY(180deg);}
 .card-face,.card-back{
   position:absolute;width:100%;height:100%;
-  backface-visibility:hidden;border-radius:5px;
+  -webkit-backface-visibility:hidden;backface-visibility:hidden;border-radius:5px;
   border:1.5px solid var(--red-d);
 }
 .card-back{
   /* Mismo reverso que la Lectura Privada: logotipo de Centro Saturno */
-  background:linear-gradient(135deg,#150f22,#130d20);
+  /* Logo como fondo (no <img>): en iPhone una <img> con opacidad ignoraba
+     backface-visibility y el logo se veía encima de la cara volteada */
+  background:
+    linear-gradient(rgba(21,15,34,.3),rgba(21,15,34,.3)),
+    url("logo-centro-saturno.png") center/80% auto no-repeat,
+    linear-gradient(135deg,#150f22,#130d20);
   border-color:rgba(196,164,100,.3);
-  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  overflow:hidden;
 }
-.card-back img{width:80%;height:auto;opacity:.7;pointer-events:none;user-select:none;-webkit-user-drag:none;}
-.card-face{transform:rotateY(180deg);overflow:hidden;}
+.card-face{-webkit-transform:rotateY(180deg);transform:rotateY(180deg);overflow:hidden;}
 .card-face img{width:100%;height:100%;object-fit:cover;border-radius:4px;}
 .card-num{
   position:absolute;top:3px;right:3px;
@@ -719,7 +723,6 @@ function buildCards(){
     slot.dataset.suit=suit;
     const inner=document.createElement('div'); inner.className='card-inner';
     const back=document.createElement('div'); back.className='card-back';
-    back.innerHTML='<img src="logo-centro-saturno.png" alt="" draggable="false">';
     const face=document.createElement('div'); face.className='card-face';
     const img=document.createElement('img');
     img.src=cardPath(num,suit); img.alt=`${num} de ${suit}`;
