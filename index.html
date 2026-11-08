@@ -461,7 +461,7 @@ body{
 <div class="page" id="pg-transition">
   <canvas id="trans-canvas" width="280" height="280"></canvas>
   <div class="trans-inv" id="trans-inv-text">Preparando las fuerzas...</div>
-  <div class="trans-sub" id="trans-step-text">Barajada 0 de 7</div>
+  <div class="trans-sub" id="trans-step-text">Invocación</div>
 </div>
 
 <!-- ═══════════ PÁGINA 3: Selección de cartas ═══════════ -->
@@ -536,9 +536,9 @@ function cardPath(num, suit){
   return `cartas/${folder}/${fname} de ${folder}.jpg`;
 }
 
+// Invocación espiritual antes de barajar (la misma lista en todas las lecturas)
 const INVOCACIONES = [
-  "Santa Muerte","Lucífugo","Nivirus",
-  "Santa Muerte","San Simón","Lucifer","Santa Muerte"
+  "Lucifer","Lucífugo","Nibirus","San Simón","Santa Muerte","Juan Noj"
 ];
 
 // ── Significados completos del PDF ────────────────────────────────────────────
@@ -658,11 +658,17 @@ function runTransition(){
   deck=[];
   for(const s of SUITS) for(const n of NUMS) deck.push([n,s]);
 
-  let step=0;
+  // 1) invocación, un nombre a la vez; 2) después, las 7 barajadas
+  let inv=0, step=0;
   function doShuffle(){
-    if(step<7){
+    if(inv<INVOCACIONES.length){
+      document.getElementById('trans-inv-text').textContent=`✦  ${INVOCACIONES[inv]}  ✦`;
+      document.getElementById('trans-step-text').textContent='Invocación';
+      inv++;
+      setTimeout(doShuffle,600);
+    } else if(step<7){
       shuffle(deck);
-      document.getElementById('trans-inv-text').textContent=`✦  ${INVOCACIONES[step]}  ✦`;
+      document.getElementById('trans-inv-text').textContent='✦  Barajando las cartas  ✦';
       document.getElementById('trans-step-text').textContent=`Barajada ${step+1} de 7`;
       step++;
       setTimeout(doShuffle,430);
